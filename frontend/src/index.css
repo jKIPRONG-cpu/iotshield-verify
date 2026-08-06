@@ -1,0 +1,292 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ==========================================================================
+   IoTShield Verify — global styles
+   --------------------------------------------------------------------------
+   Design tokens live in tailwind.config.js. This file holds the base layer
+   (page plane, typography, focus, scrollbars), the composite component
+   utilities the app reuses everywhere (`glass`, `lit-edge`, `skeleton`), and
+   the handful of third-party overrides React Flow and Recharts need to sit
+   correctly on the navy plane.
+   ========================================================================== */
+
+@layer base {
+  html {
+    color-scheme: dark;
+    -webkit-text-size-adjust: 100%;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply m-0 bg-navy-900 font-sans text-ink-100 antialiased;
+    min-height: 100svh;
+    font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+    overflow-x: hidden;
+  }
+
+  /* Ambient aurora — a fixed, non-interactive wash that keeps the navy plane
+     from reading flat without competing with foreground content. */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background:
+      radial-gradient(
+        900px 520px at 12% -6%,
+        rgb(59 130 246 / 0.15),
+        transparent 62%
+      ),
+      radial-gradient(
+        760px 460px at 92% 4%,
+        rgb(34 211 238 / 0.09),
+        transparent 60%
+      ),
+      radial-gradient(
+        1100px 620px at 60% 108%,
+        rgb(167 139 250 / 0.08),
+        transparent 64%
+      );
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-weight: 600;
+    letter-spacing: -0.018em;
+  }
+
+  :focus-visible {
+    outline: 2px solid theme('colors.brand.400');
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  ::selection {
+    background: rgb(59 130 246 / 0.35);
+    color: theme('colors.ink.100');
+  }
+
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: theme('colors.navy.600') transparent;
+  }
+
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background-color: theme('colors.navy.600');
+    border: 3px solid transparent;
+    border-radius: 999px;
+    background-clip: padding-box;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: theme('colors.navy.500');
+  }
+}
+
+@layer components {
+  /* The signature panel treatment used by every card in the product.
+
+     Deliberately NO backdrop-filter. A page card sits on the navy plane rather
+     than floating over content, so a blur buys nothing visually — and a card
+     can be very tall (the device table runs past 2500px), where a full-size
+     backdrop layer is both expensive to rasterise every frame and liable to
+     fail outright on software renderers, leaving the panel blank. The frosted
+     look comes from the translucent gradient instead. Use `.glass-float` for
+     elements that genuinely overlay other content. */
+  .glass {
+    @apply border border-white/[0.07] shadow-glass;
+    background: linear-gradient(
+      160deg,
+      rgb(255 255 255 / 0.045),
+      rgb(255 255 255 / 0.022)
+    );
+  }
+
+  /* Floating chrome — dropdowns, tooltips, drawers. These are small and
+     viewport-bounded, and they really do sit over content, so the blur both
+     reads correctly and stays cheap. */
+  .glass-float,
+  .glass-strong {
+    @apply border border-white/[0.09] shadow-raise backdrop-blur-2xl;
+    background: linear-gradient(
+      160deg,
+      rgb(19 35 64 / 0.88),
+      rgb(15 26 47 / 0.82)
+    );
+  }
+
+  .glass-sunken {
+    @apply rounded-xl border border-white/[0.05] bg-navy-950/45;
+  }
+
+  /* Hairline top highlight that reads as a lit edge on a glass panel. */
+  .lit-edge {
+    position: relative;
+  }
+
+  .lit-edge::after {
+    content: '';
+    position: absolute;
+    inset-inline: 1.25rem;
+    top: 0;
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgb(96 165 250 / 0.5),
+      transparent
+    );
+    pointer-events: none;
+  }
+
+  .text-gradient {
+    background: linear-gradient(
+      100deg,
+      theme('colors.ink.100') 8%,
+      theme('colors.brand.300') 52%,
+      theme('colors.ice.300') 96%
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  /* Loading placeholder shared by every skeleton in the app. */
+  .skeleton {
+    @apply relative overflow-hidden rounded-md bg-navy-700/55;
+  }
+
+  .skeleton::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    transform: translateX(-100%);
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgb(96 165 250 / 0.11),
+      transparent
+    );
+    animation: shimmer 1.8s infinite;
+  }
+
+  /* Uppercase micro-label used above stats and in table headers. */
+  .eyebrow {
+    @apply text-[10px] font-semibold uppercase tracking-[0.14em] text-ink-500;
+  }
+}
+
+@layer utilities {
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Fades a scrolling region's edges so content dissolves rather than clips. */
+  .fade-y {
+    mask-image: linear-gradient(
+      to bottom,
+      transparent,
+      black 14px,
+      black calc(100% - 14px),
+      transparent
+    );
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
+
+/* ==========================================================================
+   Third-party overrides
+   ========================================================================== */
+
+.react-flow__attribution {
+  display: none;
+}
+
+.react-flow__handle {
+  border: none;
+  background: theme('colors.navy.500');
+  width: 7px;
+  height: 7px;
+}
+
+.react-flow__controls-button {
+  background: theme('colors.navy.750');
+  border-bottom: 1px solid theme('colors.navy.600');
+  fill: theme('colors.ink.300');
+}
+
+.react-flow__controls-button:hover {
+  background: theme('colors.navy.700');
+}
+
+.recharts-surface:focus-visible {
+  outline: 2px solid theme('colors.brand.400');
+}
+
+.recharts-tooltip-wrapper {
+  outline: none;
+}
+
+/* ==========================================================================
+   Print — Incident Reports export to PDF via the browser print dialog
+   ========================================================================== */
+
+@media print {
+  body::before {
+    display: none;
+  }
+
+  body {
+    background: #ffffff !important;
+    color: #0b0b0b !important;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+
+  .print-plain {
+    background: #ffffff !important;
+    border-color: #d6d9e0 !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    color: #0b0b0b !important;
+  }
+
+  .print-break {
+    break-inside: avoid;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}

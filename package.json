@@ -1,0 +1,21 @@
+{
+  "name": "iotshield-verify",
+  "private": true,
+  "version": "1.0.0",
+  "description": "IoTShield Verify \u2014 a formal verification approach to IoT malware analysis, detection, and resilience. Demonstration console.",
+  "type": "module",
+  "scripts": {
+    "dev:frontend": "npm --prefix frontend run dev",
+    "dev:backend": "cd backend && python3 run.py",
+    "build": "npm --prefix frontend run build",
+    "preview": "npm --prefix frontend run preview",
+    "verify:backend": "python3 tools/verify_backend.py",
+    "verify:frontend": "node tools/verify_frontend.mjs",
+    "verify:parity": "node tools/dump_mock.mjs > /tmp/iotshield-ts-mock.json && python3 tools/check_parity.py /tmp/iotshield-ts-mock.json"
+  },
+  "devDependencies": {
+    "esbuild": "^0.25.0",
+    "playwright-core": "^1.50.0",
+    "tsx": "^4.19.0"
+  }
+}
