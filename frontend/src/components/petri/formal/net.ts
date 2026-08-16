@@ -164,6 +164,30 @@ export function colourOf(profile: DeviceProfile, state: DeviceState): DeviceColo
    Transitions
    ========================================================================== */
 
+/**
+ * Every transition id, in a fixed order.
+ *
+ * The index into this table is what gets packed into an edge integer, so the
+ * reachability graph can hold ~2M edges as numbers rather than as objects
+ * carrying label strings.
+ */
+export const TRANSITION_IDS = [
+  't-receive',
+  't-auth',
+  't-analyse',
+  't-execute',
+  't-exfil',
+  't-resume',
+  't-detect',
+  't-verify',
+  't-isolate',
+  't-recover',
+  't-restore',
+  't-infect',
+] as const
+
+export type TransitionId = (typeof TRANSITION_IDS)[number]
+
 /** One fired transition, retained so counterexamples read as firing sequences. */
 export interface Firing {
   /** Transition id, e.g. 't-analyse'. */

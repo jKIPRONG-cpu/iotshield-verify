@@ -27,7 +27,7 @@ import {
   initialMarking,
   markingKey,
   successors,
-  type Firing,
+  TRANSITION_IDS,
   type Marking,
   type NetConfig,
 } from './net'
@@ -41,8 +41,17 @@ export interface ReachabilityGraph {
   states: Marking[]
   /** succ[i] = indices of successors of state i. */
   succ: number[][]
-  /** edgeFiring[i][k] = the firing producing succ[i][k]. */
-  edgeFiring: Firing[][]
+  /**
+   * edgePacked[i][k] encodes the firing producing succ[i][k] as one integer.
+   *
+   * Storing a `Firing` object per edge exhausted the heap at roughly two
+   * million edges — the label strings dominated. Packing to an integer and
+   * rebuilding the label only when a counterexample is printed keeps the whole
+   * graph in memory comfortably.
+   */
+  edgePacked: number[][]
+  /** The configuration explored, needed to decode packed edges. */
+  config: NetConfig
   /** Indices with no successors — a deadlock if non-empty. */
   terminal: number[]
   /** Total transition firings across the graph. */
@@ -58,7 +67,38 @@ export interface ExploreOptions {
   maxStates?: number
 }
 
-const DEFAULT_MAX_STATES = 400_000
+const DEFAULT_MAX_STATES = 1_000_000
+
+/* --------------------------------------------------------------------------
+   Edge packing: transitionIndex * 121 + device * 11 + (partner + 1)
+   Supports up to 11 devices and any number of transitions.
+   -------------------------------------------------------------------------- */
+
+const TRANSITION_INDEX = new Map<string, number>(
+  TRANSITION_IDS.map((id, i) => [id, i]),
+)
+
+function packFiring(transition: string, device: number, partner?: number): number {
+  const t = TRANSITION_INDEX.get(transition) ?? 0
+  return t * 121 + device * 11 + (partner === undefined ? 0 : partner + 1)
+}
+
+/** Rebuild a readable inscription from a packed edge. */
+export function decodeFiring(packed: number, config: NetConfig): string {
+  const t = Math.floor(packed / 121)
+  const rest = packed % 121
+  const device = Math.floor(rest / 11)
+  const partnerCode = rest % 11
+
+  const transition = TRANSITION_IDS[t] ?? 't-?'
+  const who = config.devices[device]?.id ?? `d${device}`
+
+  if (partnerCode > 0) {
+    const partner = config.devices[partnerCode - 1]?.id ?? `d${partnerCode - 1}`
+    return `${transition}(${who} -> ${partner})`
+  }
+  return `${transition}(${who})`
+}
 
 /** Construct the reachability graph by breadth-first exploration. */
 export function explore(
@@ -72,18 +112,19 @@ export function explore(
   const index = new Map<string, number>()
   const states: Marking[] = []
   const succ: number[][] = []
-  const edgeFiring: Firing[][] = []
+  const edgePacked: number[][] = []
 
-  const intern = (m: Marking): number => {
+  /** Intern a marking, reporting whether it was newly discovered. */
+  const intern = (m: Marking): { id: number; isNew: boolean } => {
     const key = markingKey(m)
     const existing = index.get(key)
-    if (existing !== undefined) return existing
+    if (existing !== undefined) return { id: existing, isNew: false }
     const id = states.length
     index.set(key, id)
     states.push(m)
     succ.push([])
-    edgeFiring.push([])
-    return id
+    edgePacked.push([])
+    return { id, isNew: true }
   }
 
   intern(initial)
@@ -96,15 +137,19 @@ export function explore(
     const current = queue[head]
 
     for (const s of successors(states[current], config)) {
+      // Respect the cap, but still record edges into already-known states so
+      // the explored fragment stays internally consistent.
       if (states.length >= maxStates && !index.has(markingKey(s.marking))) {
         truncated = true
         continue
       }
-      const target = intern(s.marking)
-      succ[current].push(target)
-      edgeFiring[current].push(s.firing)
+      const { id, isNew } = intern(s.marking)
+      succ[current].push(id)
+      edgePacked[current].push(
+        packFiring(s.firing.transition, s.firing.device, s.firing.partner),
+      )
       edgeCount++
-      if (target === states.length - 1) queue.push(target)
+      if (isNew) queue.push(id)
     }
   }
 
@@ -116,7 +161,8 @@ export function explore(
   return {
     states,
     succ,
-    edgeFiring,
+    edgePacked,
+    config,
     terminal,
     edgeCount,
     truncated,
@@ -251,7 +297,7 @@ export function pathTo(graph: ReachabilityGraph, target: number): Trace {
         let cur = target
         while (cur !== 0) {
           const back = parent.get(cur)!
-          steps.unshift(graph.edgeFiring[back.from][back.edge].label)
+          steps.unshift(decodeFiring(graph.edgePacked[back.from][back.edge], graph.config))
           path.unshift(back.from)
           cur = back.from
         }
@@ -292,7 +338,7 @@ export function lassoIn(
     for (let k = 0; k < graph.succ[cur].length; k++) {
       const next = graph.succ[cur][k]
       if (!region[next]) continue
-      steps.push(graph.edgeFiring[cur][k].label)
+      steps.push(decodeFiring(graph.edgePacked[cur][k], graph.config))
       cur = next
       advanced = true
       break
