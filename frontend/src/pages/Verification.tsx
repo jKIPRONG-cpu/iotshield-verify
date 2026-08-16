@@ -419,30 +419,44 @@ export default function Verification() {
         <GlassCard className="p-5 xl:col-span-2" lit>
           <SectionTitle
             title="What the two failures mean"
-            subtitle="The finding this project exists to demonstrate"
+            subtitle="Computed by the model checker, not asserted"
             icon={<TriangleAlert className="size-[18px]" aria-hidden />}
           />
           <div className="mt-4 space-y-3.5 text-[13px] leading-relaxed text-ink-300">
             <p>
               Neither failure is a detector fault. In every simulated run the
-              response works: the threat is caught and the device is quarantined.
-              What the model checker reports is subtler and more useful —
-              containment is <strong className="font-semibold text-ink-100">reachable</strong>{' '}
-              but not <strong className="font-semibold text-ink-100">inevitable</strong>.
+              response works: the threat is caught and the device is
+              quarantined. What exhaustive exploration of the reachability
+              graph reports is subtler and more useful.
             </p>
             <p>
-              Because Analyse Behaviour and Detect Malware are concurrently
-              enabled on the same token, a scheduler is free to keep choosing the
-              analysis branch. No amount of testing would surface that: it is a
-              property of the state space, not of any single execution. This is
-              exactly the class of defect formal methods exist to find, and the
-              reason a verification stage sits between detection and response in
-              the model rather than after it.
+              <strong className="font-semibold text-ink-100">
+                Malware Containment
+              </strong>{' '}
+              fails because the deferral arc returns a token from Malware
+              Execution to Suspicious Behaviour{' '}
+              <em className="not-italic text-brand-200">
+                without recording an observation
+              </em>
+              . Since the detector fires only on a second observation, a
+              schedule that always defers keeps its precondition permanently
+              unmet — the detector is never even enabled. That is structural,
+              not a scheduling artefact: it fails under weak fairness too.
+            </p>
+            <p>
+              <strong className="font-semibold text-ink-100">
+                Data Leakage Prevention
+              </strong>{' '}
+              fails because the exfiltration arc is enabled after the first
+              observation while detection still awaits the second, so a
+              transfer completes before the verdict.
             </p>
             <p className="text-ink-500">
-              Both failures come with a concrete, bounded model change — a
-              priority guard and an egress-volume guard — that converts the
-              eventuality from possible to guaranteed.
+              Both corrections are bounded and were derived from these traces —
+              a bounded analysis retry, and an egress hold pending inspection.
+              Under the hardened model the leakage property holds outright and
+              containment holds under weak fairness, which is the weakest
+              assumption any concurrent system needs.
             </p>
           </div>
         </GlassCard>

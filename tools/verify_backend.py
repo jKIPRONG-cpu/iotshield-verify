@@ -22,7 +22,8 @@ from pathlib import Path
 _tmp = Path(tempfile.mkdtemp(prefix="iotshield-verify-"))
 os.environ["IOTSHIELD_DB"] = str(_tmp / "verify.db")
 
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "backend"))
+REPO_ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(REPO_ROOT / "backend"))
 
 from fastapi.testclient import TestClient  # noqa: E402
 
