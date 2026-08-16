@@ -426,8 +426,18 @@ function evidenceMarkdown() {
 }
 
 if (doWrite) {
+  /* Wall-clock timings are measurements of the machine, not results of the
+     model. Leaving them in the committed artefact makes the file differ on
+     every run, so a genuine change in a verdict would be lost in timing noise.
+     They are stripped here and remain visible in the console output above. */
+  const deterministic = JSON.parse(JSON.stringify(report))
+  for (const v of ['baseline', 'hardened']) {
+    delete deterministic[v].exploreMs
+    for (const r of deterministic[v].results) delete r.durationMs
+  }
+
   const jsonTarget = resolve(root, 'frontend/src/data/verification-results.json')
-  writeFileSync(jsonTarget, JSON.stringify(report, null, 2) + '\n')
+  writeFileSync(jsonTarget, JSON.stringify(deterministic, null, 2) + '\n')
   const mdTarget = resolve(root, 'VERIFICATION_EVIDENCE.md')
   writeFileSync(mdTarget, evidenceMarkdown() + '\n')
   console.log(`\n${D}written: ${jsonTarget}${X}`)

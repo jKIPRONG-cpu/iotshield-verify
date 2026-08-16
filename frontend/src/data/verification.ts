@@ -68,7 +68,10 @@ function toProperty(raw: RawResult): VerificationProperty {
     recommendation: RECOMMENDATION[raw.id] ?? '',
     statesExplored: raw.statesExplored,
     transitionsFired: raw.transitionsFired,
-    durationMs: raw.durationMs,
+    // Wall-clock timing is not persisted: it is a property of the machine
+    // that ran the checker, not of the model. States explored is the
+    // reproducible measure of effort and is shown instead.
+    durationMs: 0,
     counterexample: raw.counterexample ?? undefined,
     category: raw.category as VerificationProperty['category'],
   }
@@ -85,7 +88,7 @@ function toRun(
   return {
     id,
     model,
-    startedAt: new Date(Date.now() - run.exploreMs).toISOString(),
+    startedAt: new Date().toISOString(),
     properties,
     passed,
     failed: properties.length - passed,

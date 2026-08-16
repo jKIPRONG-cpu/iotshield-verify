@@ -153,7 +153,10 @@ function PropertyCard({
             {[
               { label: 'States explored', value: formatNumber(property.statesExplored) },
               { label: 'Transitions fired', value: formatNumber(property.transitionsFired) },
-              { label: 'Duration', value: `${property.durationMs} ms` },
+              {
+                label: 'Transitions',
+                value: property.transitionsFired.toLocaleString(),
+              },
             ].map((s) => (
               <div key={s.label} className="glass-sunken px-3 py-2">
                 <dt className="text-[9.5px] uppercase tracking-[0.1em] text-ink-500">

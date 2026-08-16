@@ -1505,7 +1505,8 @@ def _to_property(raw: dict[str, Any]) -> dict[str, Any]:
         "recommendation": _RECOMMENDATION.get(raw["id"], ""),
         "statesExplored": states,
         "transitionsFired": raw["transitionsFired"],
-        "durationMs": raw["durationMs"],
+        # Not persisted — a machine measurement, not a model result.
+        "durationMs": 0,
         "counterexample": raw.get("counterexample"),
         "category": raw["category"],
     }
@@ -1532,7 +1533,7 @@ def generate_verification(rng: Rng) -> dict[str, Any]:
     return {
         "id": "VRUN-BASELINE",
         "model": "CPN-IoT-Defence — baseline",
-        "startedAt": iso_ago(run["exploreMs"]),
+        "startedAt": iso_ago(0),
         "properties": properties,
         "passed": passed,
         "failed": len(properties) - passed,

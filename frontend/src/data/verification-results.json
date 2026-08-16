@@ -37,7 +37,6 @@
     "transitions": 70400,
     "terminalStates": 0,
     "truncated": false,
-    "exploreMs": 657,
     "results": [
       {
         "id": "VP-01",
@@ -49,8 +48,7 @@
         "statesExplored": 15876,
         "transitionsFired": 70400,
         "status": "Verified",
-        "violatingStates": 0,
-        "durationMs": 9
+        "violatingStates": 0
       },
       {
         "id": "VP-02",
@@ -62,8 +60,7 @@
         "statesExplored": 15876,
         "transitionsFired": 70400,
         "status": "Verified",
-        "violatingStates": 0,
-        "durationMs": 56
+        "violatingStates": 0
       },
       {
         "id": "VP-03",
@@ -75,8 +72,7 @@
         "statesExplored": 15876,
         "transitionsFired": 70400,
         "status": "Verified",
-        "violatingStates": 0,
-        "durationMs": 0
+        "violatingStates": 0
       },
       {
         "id": "VP-04",
@@ -88,8 +84,7 @@
         "statesExplored": 15876,
         "transitionsFired": 70400,
         "status": "Verified",
-        "violatingStates": 0,
-        "durationMs": 14
+        "violatingStates": 0
       },
       {
         "id": "VP-05",
@@ -115,8 +110,7 @@
           "t-reobserve(GW-1)",
           "t-reobserve(GW-1)"
         ],
-        "counterexampleLoopFrom": 8,
-        "durationMs": 229
+        "counterexampleLoopFrom": 8
       },
       {
         "id": "VP-06",
@@ -136,8 +130,7 @@
           "t-execute(GW-1)",
           "t-exfil(GW-1)",
           "<property violated in the marking above>"
-        ],
-        "durationMs": 11
+        ]
       },
       {
         "id": "VP-07",
@@ -149,8 +142,7 @@
         "statesExplored": 15876,
         "transitionsFired": 70400,
         "status": "Verified",
-        "violatingStates": 0,
-        "durationMs": 9
+        "violatingStates": 0
       },
       {
         "id": "VP-08",
@@ -162,8 +154,7 @@
         "statesExplored": 15876,
         "transitionsFired": 70400,
         "status": "Verified",
-        "violatingStates": 0,
-        "durationMs": 18
+        "violatingStates": 0
       }
     ],
     "passed": 6,
@@ -177,7 +168,6 @@
     "transitions": 19888,
     "terminalStates": 0,
     "truncated": false,
-    "exploreMs": 362,
     "results": [
       {
         "id": "VP-01",
@@ -189,8 +179,7 @@
         "statesExplored": 5184,
         "transitionsFired": 19888,
         "status": "Verified",
-        "violatingStates": 0,
-        "durationMs": 4
+        "violatingStates": 0
       },
       {
         "id": "VP-02",
@@ -202,8 +191,7 @@
         "statesExplored": 5184,
         "transitionsFired": 19888,
         "status": "Verified",
-        "violatingStates": 0,
-        "durationMs": 34
+        "violatingStates": 0
       },
       {
         "id": "VP-03",
@@ -215,8 +203,7 @@
         "statesExplored": 5184,
         "transitionsFired": 19888,
         "status": "Verified",
-        "violatingStates": 0,
-        "durationMs": 1
+        "violatingStates": 0
       },
       {
         "id": "VP-04",
@@ -228,8 +215,7 @@
         "statesExplored": 5184,
         "transitionsFired": 19888,
         "status": "Verified",
-        "violatingStates": 0,
-        "durationMs": 7
+        "violatingStates": 0
       },
       {
         "id": "VP-05",
@@ -270,8 +256,7 @@
           "t-analyse(PLC-1)",
           "t-restore(PLC-1)"
         ],
-        "counterexampleLoopFrom": 20,
-        "durationMs": 90
+        "counterexampleLoopFrom": 20
       },
       {
         "id": "VP-06",
@@ -283,8 +268,7 @@
         "statesExplored": 5184,
         "transitionsFired": 19888,
         "status": "Verified",
-        "violatingStates": 0,
-        "durationMs": 3
+        "violatingStates": 0
       },
       {
         "id": "VP-07",
@@ -296,8 +280,7 @@
         "statesExplored": 5184,
         "transitionsFired": 19888,
         "status": "Verified",
-        "violatingStates": 0,
-        "durationMs": 2
+        "violatingStates": 0
       },
       {
         "id": "VP-08",
@@ -309,8 +292,7 @@
         "statesExplored": 5184,
         "transitionsFired": 19888,
         "status": "Verified",
-        "violatingStates": 0,
-        "durationMs": 9
+        "violatingStates": 0
       }
     ],
     "passed": 7,
