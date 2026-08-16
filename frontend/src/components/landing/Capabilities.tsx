@@ -46,7 +46,7 @@ const CAPABILITIES: Capability[] = [
     icon: GitBranch,
     title: 'Formal Verification',
     detail:
-      'Validate system behaviour using Coloured Petri Nets, model-checking six temporal-logic properties against the full reachability graph.',
+      'Validate system behaviour using Coloured Petri Nets. Eight CTL and LTL properties are model-checked against the full reachability graph by an explicit-state checker that ships with the project.',
     to: '/verification',
     linkLabel: 'Formal Verification',
     accent: '#A78BFA',

@@ -6,14 +6,22 @@
  * separate from behaviour means the layout, the firing rules, and the
  * verification narrative all read from one description of the model.
  *
- * Colour set:
- *   DEVICE = record { id : STRING, trust : TRUST, threat : THREAT }
- *   TRUST  = { unknown | authenticated | quarantined }
- *   THREAT = { none | suspected | confirmed }
+ * SCOPE — read this before citing anything here.
  *
- * A token carries a colour; transition guards test it. That is what makes the
- * net *coloured* rather than a plain place/transition net — the same structure
- * routes benign and malicious traffic differently based on token colour alone.
+ * This file is the ANIMATION model. Its colour set is a flat five-value enum
+ * of threat status, and its guards are descriptive strings rendered on the
+ * canvas, not executable predicates. It exists to make token flow legible on
+ * screen at presentation speed.
+ *
+ * It is NOT the verified artefact. The formal model — a record colour set with
+ * device class, zone, trust, threat and bounded counters, plus executable
+ * guards and a two-token lateral-infection transition — lives in `./formal/`
+ * and is what the model checker explores. Verification results shown in the
+ * console come from there.
+ *
+ * The two share place and transition names so the animation corresponds to the
+ * verified structure, but they are separate models with different semantics:
+ * this one fires simultaneously, the formal one interleaves.
  */
 
 /* ==========================================================================

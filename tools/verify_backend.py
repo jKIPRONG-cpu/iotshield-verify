@@ -11,6 +11,8 @@ Run from the repository root:
 
 from __future__ import annotations
 
+import json
+
 import os
 import sys
 import tempfile
@@ -191,15 +193,51 @@ check(
 
 section("Formal methods & resilience")
 
+# The expected property set comes from the model checker's own output, so this
+# test tracks the model instead of asserting a count that rots when a property
+# is added. It also proves the API is serving computed results, not a fixture.
+_RESULTS = json.loads(
+    (REPO_ROOT / "frontend" / "src" / "data" / "verification-results.json").read_text()
+)
+_EXPECTED = _RESULTS["baseline"]["results"]
+_EXPECTED_IDS = [p["id"] for p in _EXPECTED]
+
+
+def _expected_status(raw):
+    if raw["status"] == "Verified":
+        return "Verified"
+    return "Warning" if raw.get("statusUnderFairness") == "Verified" else "Failed"
+
+
 r = client.get("/verification")
 check("GET /verification returns 200", r.status_code == 200, r.text[:200])
 verification = r.json() if r.status_code == 200 else {}
 props = verification.get("properties", [])
-check("verification returns 6 properties", len(props) == 6, f"got {len(props)}")
 check(
-    "baseline has 4 verified and 2 failed",
-    sum(1 for p in props if p["status"] == "Verified") == 4
-    and sum(1 for p in props if p["status"] == "Failed") == 2,
+    f"verification returns {len(_EXPECTED)} properties",
+    len(props) == len(_EXPECTED),
+    f"got {len(props)}",
+)
+check(
+    "property ids match the checker's output",
+    [p["id"] for p in props] == _EXPECTED_IDS,
+    f"got {[p['id'] for p in props]}",
+)
+check(
+    "every verdict matches the computed result",
+    all(
+        p["status"] == _expected_status(e)
+        for p, e in zip(props, _EXPECTED)
+    ),
+    "; ".join(
+        f"{e['id']}: api={p['status']} computed={_expected_status(e)}"
+        for p, e in zip(props, _EXPECTED)
+        if p["status"] != _expected_status(e)
+    ),
+)
+check(
+    "state counts match the reachability graph",
+    all(p["statesExplored"] == e["statesExplored"] for p, e in zip(props, _EXPECTED)),
 )
 check(
     "failed properties carry a counterexample",
@@ -230,7 +268,11 @@ for scenario in ("normal", "mirai", "botnet", "credential", "ransomware"):
     check(f"  {scenario}: steps are ordered",
           all(result["steps"][i]["atOffsetMs"] <= result["steps"][i + 1]["atOffsetMs"]
               for i in range(len(result["steps"]) - 1)))
-    check(f"  {scenario}: returns 6 verification verdicts", len(result["verification"]) == 6)
+    check(
+        f"  {scenario}: returns {len(_EXPECTED)} verification verdicts",
+        len(result["verification"]) == len(_EXPECTED),
+        f"got {len(result['verification'])}",
+    )
     check(
         f"  {scenario}: violated count matches the verdicts",
         result["metrics"]["propertiesViolated"]
@@ -279,7 +321,11 @@ report = r.json() if r.status_code == 200 else {}
 check("report carries an executive summary", len(report.get("executiveSummary", [])) >= 4)
 check("report carries recommendations", len(report.get("recommendations", [])) >= 4)
 check("report carries a timeline", len(report.get("timeline", [])) > 0)
-check("report carries verification results", len(report.get("verification", [])) == 6)
+check(
+    "report carries verification results",
+    len(report.get("verification", [])) == len(_EXPECTED),
+    f"got {len(report.get('verification', []))}",
+)
 
 r = client.get("/reports/pdf")
 check("GET /reports/pdf returns 200", r.status_code == 200, r.text[:300])

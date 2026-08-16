@@ -11,7 +11,9 @@
     "preview": "npm --prefix frontend run preview",
     "verify:backend": "python3 tools/verify_backend.py",
     "verify:frontend": "node tools/verify_frontend.mjs",
-    "verify:parity": "node tools/dump_mock.mjs > /tmp/iotshield-ts-mock.json && python3 tools/check_parity.py /tmp/iotshield-ts-mock.json"
+    "verify:parity": "node tools/dump_mock.mjs > /tmp/iotshield-ts-mock.json && python3 tools/check_parity.py /tmp/iotshield-ts-mock.json",
+    "verify:model": "node --max-old-space-size=6000 tools/verify_model.mjs",
+    "verify:model:write": "node --max-old-space-size=6000 tools/verify_model.mjs --write"
   },
   "devDependencies": {
     "esbuild": "^0.25.0",

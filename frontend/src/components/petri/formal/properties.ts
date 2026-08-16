@@ -33,9 +33,15 @@ import type { PropertySpec } from './check'
    ========================================================================== */
 
 export const VERIFIED_DEVICES: DeviceProfile[] = [
-  { id: 'GW-1', cls: 'gateway', zone: 'building', hard: 0 },
-  { id: 'TH-1', cls: 'thermostat', zone: 'building', hard: 1 },
-  { id: 'PLC-1', cls: 'plc', zone: 'plant', hard: 2 },
+  // Internet-facing, unpatched: the estate's entry point.
+  { id: 'GW-1', cls: 'gateway', zone: 'building', hard: 0, exposed: true },
+  // An actuator on the same segment. Gateway -> thermostat strength is 2,
+  // hardening is 1, so 2 > 1 and the infection succeeds.
+  { id: 'TH-1', cls: 'thermostat', zone: 'building', hard: 1, exposed: false },
+  // The critical asset. Gateway -> PLC strength is 1 against hardening 2, so
+  // 1 > 2 is false and the guard denies propagation. Routable, but not
+  // overcome — which is the point the pair relation exists to make.
+  { id: 'PLC-1', cls: 'plc', zone: 'plant', hard: 2, exposed: false },
 ]
 
 export function makeConfig(

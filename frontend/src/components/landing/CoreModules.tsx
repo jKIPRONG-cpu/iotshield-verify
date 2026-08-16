@@ -78,7 +78,7 @@ const MODULES: ModuleCard[] = [
   {
     icon: GitBranch,
     title: 'Coloured Petri Net Visualization',
-    body: 'An executable model of the defence pipeline — ten places, eight transitions, five token colours — with play, pause, step and reset controls.',
+    body: 'An executable model of the defence pipeline with play, pause, step and reset controls, backed by a record colour set carrying device class, zone, trust and threat.',
     to: '/petri-net',
     accent: '#A78BFA',
     featured: true,
@@ -86,7 +86,7 @@ const MODULES: ModuleCard[] = [
   {
     icon: ShieldCheck,
     title: 'Formal Verification Engine',
-    body: 'Six CTL and LTL properties checked against the reachability graph, each with its verdict, reasoning, counterexample trace and remediation.',
+    body: 'Eight CTL and LTL properties checked against the reachability graph, each with its computed verdict, counterexample trace and remediation.',
     to: '/verification',
     accent: '#22C55E',
     featured: true,

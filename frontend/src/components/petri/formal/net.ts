@@ -110,6 +110,17 @@ export interface DeviceProfile {
   cls: DeviceClass
   zone: Zone
   hard: Hardening
+  /**
+   * Whether the device is directly reachable by an external attacker.
+   *
+   * Without this distinction every device can compromise itself out of thin
+   * air, which makes any class-specific or blast-radius property false by
+   * construction: the critical asset simply self-infects. Modelling exposure
+   * explicitly means an internal device becomes compromised only through the
+   * lateral-infection transition — which is exactly what makes the
+   * heterogeneous-interaction guard the thing under test.
+   */
+  exposed: boolean
 }
 
 export interface NetConfig {
@@ -175,6 +186,8 @@ export const TRANSITION_IDS = [
   't-receive',
   't-auth',
   't-analyse',
+  't-reobserve',
+  't-defer',
   't-execute',
   't-exfil',
   't-resume',
@@ -277,6 +290,9 @@ export function successors(marking: Marking, config: NetConfig): Successor[] {
           m[i].place = 'normal'
         },
       )
+      // Only an externally reachable device can be compromised without a
+      // lateral binding. Internal devices reach Suspicious via t-infect alone.
+      if (profile.exposed)
       emit(
         { transition: 't-analyse', label: `AnalyseBehaviour(${who}) -> suspicious`, device: i },
         (m) => {
@@ -288,12 +304,17 @@ export function successors(marking: Marking, config: NetConfig): Successor[] {
       )
     }
 
-    /* ---- t-reanalyse : Suspicious -> Suspicious -----------------------
+    /* ---- t-reobserve : Suspicious -> Suspicious -----------------------
+       A distinct binding element from t-analyse and t-defer. They consume
+       from different places, so sharing one fairness key would let a firing
+       of one discharge the obligation owed to another — and a starved
+       detector would be misjudged as fairly scheduled.
+       ---------------------------------------------------------------------
        Re-observation. In the hardened variant the retry is bounded, which is
        the control that converts containment from reachable to inevitable. */
     if (d.place === 'suspicious' && (!hardened || d.att < params.maxAnalysisAttempts)) {
       emit(
-        { transition: 't-analyse', label: `AnalyseBehaviour(${who}) -> re-observe`, device: i },
+        { transition: 't-reobserve', label: `ReObserve(${who})`, device: i },
         (m) => {
           m[i].obs = bounded(m[i].obs + 1, params.suspicionThreshold)
           m[i].att = bounded(m[i].att + 1, params.maxAnalysisAttempts)
@@ -319,7 +340,7 @@ export function successors(marking: Marking, config: NetConfig): Successor[] {
        The hardened variant bounds it with the retry counter. */
     if (d.place === 'malware' && (!hardened || d.att < params.maxAnalysisAttempts)) {
       emit(
-        { transition: 't-analyse', label: `AnalyseBehaviour(${who}) -> defer containment`, device: i },
+        { transition: 't-defer', label: `DeferContainment(${who})`, device: i },
         (m) => {
           m[i].place = 'suspicious'
           m[i].att = bounded(m[i].att + 1, params.maxAnalysisAttempts)
@@ -446,7 +467,11 @@ export function successors(marking: Marking, config: NetConfig): Successor[] {
         const t = marking[j]
         const tProfile = devices[j]
 
-        if (t.threat === 'confirmed') continue
+        // Only a clean device can be newly infected. Re-firing against an
+        // already-suspected target changes no counter once bounds saturate,
+        // which would introduce a no-op self-loop and defeat any liveness
+        // property by starvation rather than by a genuine defect.
+        if (t.threat !== 'none') continue
         if (t.trust !== 'authenticated') continue
         if (!zoneReachable(profile.zone, tProfile.zone)) continue
 

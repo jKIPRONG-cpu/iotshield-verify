@@ -37,6 +37,7 @@ import type {
   VerificationProperty,
   VerificationRun,
 } from '@/types'
+import { computedVerification } from './verification'
 
 /* ==========================================================================
    Deterministic PRNG
@@ -1261,29 +1262,24 @@ const VERIFICATION_SEEDS: readonly Omit<
   },
 ] as const
 
+/**
+ * The verification run is NOT generated — it is the computed output of the
+ * model checker, imported from `./verification.ts`.
+ *
+ * It previously returned authored verdicts with randomised state counts, which
+ * meant the console displayed conclusions nobody had computed. `rng` is still
+ * accepted so the draw sequence — and therefore dataset parity with the Python
+ * generator — is unchanged.
+ */
 function generateVerification(rng: Rng): VerificationRun {
-  const properties: VerificationProperty[] = VERIFICATION_SEEDS.map((seed) => ({
-    ...seed,
-    counterexample: seed.counterexample ? [...seed.counterexample] : undefined,
-    statesExplored: rng.int(4_200, 18_600),
-    transitionsFired: rng.int(9_800, 54_000),
-    durationMs: rng.int(180, 3_400),
-  }))
-
-  const passed = properties.filter((p) => p.status === 'Verified').length
-  const failed = properties.length - passed
-
-  return {
-    id: 'VRUN-001',
-    model: 'CPN-IoT-Defence-v3.2',
-    startedAt: isoAgo(rng.int(400, 5_000) * 1000),
-    properties,
-    passed,
-    failed,
-    successRate: Math.round((passed / properties.length) * 1000) / 10,
-    stateSpaceSize: 18_432,
-    deadlockFree: true,
+  // Consume the same draws the authored version did, preserving parity.
+  for (let i = 0; i < VERIFICATION_SEEDS.length; i++) {
+    rng.int(4_200, 18_600)
+    rng.int(9_800, 54_000)
+    rng.int(180, 3_400)
   }
+  rng.int(400, 5_000)
+  return computedVerification
 }
 
 /* ==========================================================================

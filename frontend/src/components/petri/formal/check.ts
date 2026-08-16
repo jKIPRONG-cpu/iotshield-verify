@@ -255,6 +255,167 @@ export function EG(graph: ReachabilityGraph, p: boolean[]): boolean[] {
   return result
 }
 
+
+/* ==========================================================================
+   Weak fairness
+   --------------------------------------------------------------------------
+   A concurrent net fails almost every liveness property under an arbitrary
+   scheduler: nothing stops one device cycling forever while another waits to
+   be isolated. That is starvation, not a security defect, and reporting it as
+   one would be misleading.
+
+   The standard remedy is to evaluate liveness under a fairness assumption.
+   Weak fairness says: a transition that stays continuously enabled must
+   eventually fire. Under that assumption a cycle is admissible only if, for
+   every transition, either the transition is disabled somewhere on the cycle,
+   or it actually fires on the cycle.
+
+   Both readings are reported. The distinction matters for the research claim:
+   a property that holds only under fairness depends on a scheduler guarantee,
+   whereas one that holds without it is guaranteed structurally.
+   ========================================================================== */
+
+/**
+ * Binding elements enabled at a state — read off its outgoing edges.
+ *
+ * The unit of fairness in a coloured net is the BINDING ELEMENT (a transition
+ * together with the tokens it binds), not the transition alone. Treating
+ * `t-analyse` as one unit would let `t-analyse(TH-1)` discharge the fairness
+ * obligation owed to `t-analyse(GW-1)`, so a cycle in which one device is
+ * starved would be judged fair. The packed edge value already encodes the
+ * binding, so it is used directly as the fairness key.
+ */
+function enabledAt(graph: ReachabilityGraph, s: number): Set<number> {
+  return new Set(graph.edgePacked[s])
+}
+
+/**
+ * EG p under weak fairness.
+ *
+ * Tarjan's algorithm over the p-subgraph, keeping only strongly connected
+ * components that admit a weakly fair infinite path, then taking backward
+ * reachability to those components within p.
+ */
+export function EGfair(graph: ReachabilityGraph, p: boolean[]): boolean[] {
+  const n = graph.states.length
+  const indexOf = new Int32Array(n).fill(-1)
+  const low = new Int32Array(n)
+  const onStack = new Uint8Array(n)
+  const stack: number[] = []
+  let counter = 0
+
+  const fairSeed = new Array<boolean>(n).fill(false)
+
+  // Iterative Tarjan — the graph is far too deep for recursion.
+  for (let root = 0; root < n; root++) {
+    if (!p[root] || indexOf[root] !== -1) continue
+
+    const work: { v: number; k: number }[] = [{ v: root, k: 0 }]
+    indexOf[root] = low[root] = counter++
+    stack.push(root)
+    onStack[root] = 1
+
+    while (work.length > 0) {
+      const frame = work[work.length - 1]
+      const v = frame.v
+
+      if (frame.k < graph.succ[v].length) {
+        const w = graph.succ[v][frame.k++]
+        if (!p[w]) continue
+        if (indexOf[w] === -1) {
+          indexOf[w] = low[w] = counter++
+          stack.push(w)
+          onStack[w] = 1
+          work.push({ v: w, k: 0 })
+        } else if (onStack[w]) {
+          if (indexOf[w] < low[v]) low[v] = indexOf[w]
+        }
+      } else {
+        work.pop()
+        if (work.length > 0) {
+          const parent = work[work.length - 1].v
+          if (low[v] < low[parent]) low[parent] = low[v]
+        }
+
+        if (low[v] === indexOf[v]) {
+          // Pop one strongly connected component.
+          const component: number[] = []
+          for (;;) {
+            const w = stack.pop()!
+            onStack[w] = 0
+            component.push(w)
+            if (w === v) break
+          }
+
+          // A single state with no self-loop inside p is not an infinite path.
+          const members = new Set(component)
+          let hasInternalEdge = false
+          const firedInside = new Set<number>()
+
+          // Binding elements continuously enabled across the whole cycle =
+          // the intersection of the per-state enabled sets. Anything outside
+          // that intersection is disabled somewhere, so weak fairness imposes
+          // no obligation on it.
+          let continuouslyEnabled: Set<number> | null = null
+
+          for (const u of component) {
+            const enabled = enabledAt(graph, u)
+            if (continuouslyEnabled === null) {
+              continuouslyEnabled = new Set(enabled)
+            } else {
+              for (const b of [...continuouslyEnabled]) {
+                if (!enabled.has(b)) continuouslyEnabled.delete(b)
+              }
+            }
+            for (let k = 0; k < graph.succ[u].length; k++) {
+              const w = graph.succ[u][k]
+              if (!members.has(w) || !p[w]) continue
+              hasInternalEdge = true
+              firedInside.add(graph.edgePacked[u][k])
+            }
+          }
+
+          if (hasInternalEdge) {
+            let fair = true
+            for (const b of continuouslyEnabled ?? []) {
+              if (!firedInside.has(b)) {
+                fair = false
+                break
+              }
+            }
+            if (fair) for (const u of component) fairSeed[u] = true
+          }
+        }
+      }
+    }
+  }
+
+  // Backward reachability to a fair component, staying inside p.
+  const pred: number[][] = graph.states.map(() => [])
+  for (let i = 0; i < graph.succ.length; i++) {
+    for (const j of graph.succ[i]) if (p[i] && p[j]) pred[j].push(i)
+  }
+
+  const result = [...fairSeed]
+  const queue: number[] = []
+  for (let i = 0; i < n; i++) if (result[i]) queue.push(i)
+  for (let head = 0; head < queue.length; head++) {
+    for (const q of pred[queue[head]]) {
+      if (!result[q]) {
+        result[q] = true
+        queue.push(q)
+      }
+    }
+  }
+  return result
+}
+
+/** AF p under weak fairness. */
+export function AFfair(graph: ReachabilityGraph, p: boolean[]): boolean[] {
+  const egNotP = EGfair(graph, p.map((v) => !v))
+  return egNotP.map((v) => !v)
+}
+
 /** AF p — every path eventually reaches p. Dual of EG ¬p. */
 export function AF(graph: ReachabilityGraph, p: boolean[]): boolean[] {
   const notP = p.map((v) => !v)
@@ -390,6 +551,13 @@ export interface PropertyResult {
   durationMs: number
   /** Number of reachable states violating the property. */
   violatingStates: number
+  /**
+   * For a liveness property, the verdict under weak fairness.
+   *
+   * `undefined` for safety properties, where fairness is irrelevant.
+   */
+  statusUnderFairness?: 'Verified' | 'Failed'
+  violatingStatesUnderFairness?: number
   counterexample?: string[]
   /** Index into `steps` where a counterexample cycle begins. */
   counterexampleLoopFrom?: number
@@ -415,6 +583,8 @@ export function checkProperty(
 
   let status: 'Verified' | 'Failed' = 'Verified'
   let violating = 0
+  let fairStatus: 'Verified' | 'Failed' | undefined
+  let fairViolating: number | undefined
   let counterexample: string[] | undefined
   let loopFrom: number | undefined
 
@@ -455,9 +625,14 @@ export function checkProperty(
     const anteStates = evaluate(graph, spec.antecedent!)
     const targetStates = evaluate(graph, spec.target)
     const afTarget = AF(graph, targetStates)
+    const afFair = AFfair(graph, targetStates)
 
     const bad = anteStates.map((a, i) => a && !afTarget[i])
     violating = bad.filter(Boolean).length
+
+    const badFair = anteStates.map((a, i) => a && !afFair[i])
+    fairViolating = badFair.filter(Boolean).length
+    fairStatus = fairViolating > 0 ? 'Failed' : 'Verified'
 
     if (violating > 0) {
       status = 'Failed'
@@ -488,6 +663,8 @@ export function checkProperty(
     ...base,
     status,
     violatingStates: violating,
+    statusUnderFairness: fairStatus,
+    violatingStatesUnderFairness: fairViolating,
     counterexample,
     counterexampleLoopFrom: loopFrom,
     durationMs: Date.now() - started,
@@ -505,6 +682,8 @@ export interface CheckRun {
   passed: number
   failed: number
   successRate: number
+  /** Properties satisfied when liveness is judged under weak fairness. */
+  passedUnderFairness: number
 }
 
 /** Explore once, then check every property against the same graph. */
@@ -517,6 +696,10 @@ export function runCheck(
   const results = specs.map((spec) => checkProperty(graph, spec))
   const passed = results.filter((r) => r.status === 'Verified').length
 
+  const passedFair = results.filter(
+    (r) => (r.statusUnderFairness ?? r.status) === 'Verified',
+  ).length
+
   return {
     variant: config.variant,
     states: graph.states.length,
@@ -528,5 +711,6 @@ export function runCheck(
     passed,
     failed: results.length - passed,
     successRate: Math.round((passed / results.length) * 1000) / 10,
+    passedUnderFairness: passedFair,
   }
 }

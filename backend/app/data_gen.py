@@ -16,6 +16,10 @@ experimental measurement is modelled.
 
 from __future__ import annotations
 
+import json
+from functools import lru_cache
+from pathlib import Path
+
 import math
 import time
 from datetime import datetime, timezone
@@ -1414,32 +1418,127 @@ VERIFICATION_SEEDS: list[dict[str, Any]] = [
 ]
 
 
-def generate_verification(rng: Rng) -> dict[str, Any]:
-    properties: list[dict[str, Any]] = []
-    for seed in VERIFICATION_SEEDS:
-        prop = {k: v for k, v in seed.items()}
-        prop["counterexample"] = (
-            list(seed["counterexample"]) if seed["counterexample"] else None
-        )
-        prop["statesExplored"] = rng.int(4_200, 18_600)
-        prop["transitionsFired"] = rng.int(9_800, 54_000)
-        prop["durationMs"] = rng.int(180, 3_400)
-        properties.append(prop)
+# --------------------------------------------------------------------------
+# Computed verification results
+# --------------------------------------------------------------------------
+#
+# These are NOT generated. They are the output of the explicit-state model
+# checker in frontend/src/components/petri/formal/, produced by
+# `npm run verify:model:write` and read from the JSON it emits.
+#
+# The frontend imports the same file, which is what keeps the two halves in
+# agreement — and, more importantly, means neither side can display a verdict
+# nobody computed.
 
-    passed = sum(1 for p in properties if p["status"] == "Verified")
-    failed = len(properties) - passed
-    started_at = iso_ago(rng.int(400, 5_000) * 1000)
+_RESULTS_PATH = (
+    Path(__file__).resolve().parent.parent.parent
+    / "frontend"
+    / "src"
+    / "data"
+    / "verification-results.json"
+)
+
+# Recommendations are editorial; verdicts, traces and state counts are not.
+_RECOMMENDATION: dict[str, str] = {
+    "VP-01": "Hold this invariant when extending the model. Any new arc writing into Malware Execution must consume from Authentication, or the property regresses.",
+    "VP-02": "Recovery capacity is what makes this hold. Gating the Recover Device transition on an external dependency would break it.",
+    "VP-03": "Preserve the token-recycling arc from Recovery back to Idle. Removing it introduces terminal markings.",
+    "VP-04": "The guarantee rests on the quarantine guard. Add a regression check whenever the colour set is extended.",
+    "VP-05": "Bound the analysis retry so the detector becomes enabled after a fixed number of deferrals, and add the retry count as a detection disjunct.",
+    "VP-06": "Add an abnormal-volume disjunct to the detector, and hold egress for any device carrying an open suspicion indicator until the detector has ruled.",
+    "VP-07": "Keep critical assets hardened above the strongest inbound route in the susceptibility matrix. The guarantee is a consequence of that margin.",
+    "VP-08": "The bound follows from the susceptibility matrix and the segment policy together. Re-verify after changing either.",
+}
+
+
+@lru_cache(maxsize=1)
+def _load_computed_verification() -> dict[str, Any]:
+    """Read the checker's output. Fails loudly rather than inventing results."""
+    if not _RESULTS_PATH.exists():
+        raise FileNotFoundError(
+            f"Verification results not found at {_RESULTS_PATH}. "
+            "Run `npm run verify:model:write` from the repository root."
+        )
+    with _RESULTS_PATH.open(encoding="utf-8") as fh:
+        return json.load(fh)
+
+
+def _to_property(raw: dict[str, Any]) -> dict[str, Any]:
+    fair = raw.get("statusUnderFairness")
+
+    # A liveness property holding only under weak fairness is reported as a
+    # warning, not a pass: the guarantee is real but conditional on a scheduler
+    # assumption, and collapsing that distinction would overstate it.
+    if raw["status"] == "Verified":
+        status = "Verified"
+    elif fair == "Verified":
+        status = "Warning"
+    else:
+        status = "Failed"
+
+    states = raw["statesExplored"]
+    if raw["status"] == "Verified":
+        reason = (
+            f"Exhaustive exploration of {states:,} reachable markings found no violation."
+        )
+    elif fair == "Verified":
+        reason = (
+            f"Violated in {raw['violatingStates']:,} of {states:,} reachable markings under an "
+            "arbitrary scheduler, but satisfied under weak fairness. The guarantee holds provided "
+            "a continuously enabled action eventually fires — the weakest assumption a concurrent "
+            "system needs."
+        )
+    else:
+        reason = (
+            f"Violated in {raw['violatingStates']:,} of {states:,} reachable markings, including "
+            "under weak fairness. The failure is structural rather than a scheduling artefact."
+        )
 
     return {
-        "id": "VRUN-001",
-        "model": "CPN-IoT-Defence-v3.2",
-        "startedAt": started_at,
+        "id": raw["id"],
+        "name": raw["name"],
+        "formula": raw["formula"],
+        "logic": raw["logic"],
+        "status": status,
+        "description": raw["description"],
+        "reason": reason,
+        "recommendation": _RECOMMENDATION.get(raw["id"], ""),
+        "statesExplored": states,
+        "transitionsFired": raw["transitionsFired"],
+        "durationMs": raw["durationMs"],
+        "counterexample": raw.get("counterexample"),
+        "category": raw["category"],
+    }
+
+
+def generate_verification(rng: Rng) -> dict[str, Any]:
+    """
+    Return the computed model-checking run.
+
+    `rng` is still consumed in the original sequence so the rest of the dataset
+    — and therefore parity with the TypeScript generator — is unaffected.
+    """
+    for _ in VERIFICATION_SEEDS:
+        rng.int(4_200, 18_600)
+        rng.int(9_800, 54_000)
+        rng.int(180, 3_400)
+    rng.int(400, 5_000)
+
+    data = _load_computed_verification()
+    run = data["baseline"]
+    properties = [_to_property(r) for r in run["results"]]
+    passed = sum(1 for p in properties if p["status"] == "Verified")
+
+    return {
+        "id": "VRUN-BASELINE",
+        "model": "CPN-IoT-Defence — baseline",
+        "startedAt": iso_ago(run["exploreMs"]),
         "properties": properties,
         "passed": passed,
-        "failed": failed,
+        "failed": len(properties) - passed,
         "successRate": js_round((passed / len(properties)) * 1000) / 10,
-        "stateSpaceSize": 18_432,
-        "deadlockFree": True,
+        "stateSpaceSize": run["states"],
+        "deadlockFree": run["terminalStates"] == 0,
     }
 
 

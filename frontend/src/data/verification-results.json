@@ -1,0 +1,503 @@
+{
+  "generatedBy": "tools/verify_model.mjs",
+  "semantics": "interleaving; exhaustive up to the state cap",
+  "maxStates": 400000,
+  "parameters": {
+    "maxAnalysisAttempts": 3,
+    "suspicionThreshold": 2,
+    "volumeThreshold": 2,
+    "volumeBuckets": 3
+  },
+  "devices": [
+    {
+      "id": "GW-1",
+      "cls": "gateway",
+      "zone": "building",
+      "hard": 0,
+      "exposed": true
+    },
+    {
+      "id": "TH-1",
+      "cls": "thermostat",
+      "zone": "building",
+      "hard": 1,
+      "exposed": false
+    },
+    {
+      "id": "PLC-1",
+      "cls": "plc",
+      "zone": "plant",
+      "hard": 2,
+      "exposed": false
+    }
+  ],
+  "baseline": {
+    "variant": "baseline",
+    "states": 15876,
+    "transitions": 70400,
+    "terminalStates": 0,
+    "truncated": false,
+    "exploreMs": 657,
+    "results": [
+      {
+        "id": "VP-01",
+        "name": "Authentication Integrity",
+        "formula": "AG ¬(place(d) = MalwareExecution ∧ trust(d) = unknown)",
+        "logic": "CTL",
+        "category": "Security",
+        "description": "No device may reach Malware Execution without having passed through the Authenticate transition. The transition is a cut vertex on every path into the hazardous place.",
+        "statesExplored": 15876,
+        "transitionsFired": 70400,
+        "status": "Verified",
+        "violatingStates": 0,
+        "durationMs": 9
+      },
+      {
+        "id": "VP-02",
+        "name": "Safe State Reachability",
+        "formula": "AG EF (∀d . place(d) ∈ {Idle, Normal, Isolation, Recovery})",
+        "logic": "CTL",
+        "category": "Reachability",
+        "description": "From every reachable state the system retains a path back to a marking in which every device is safe. No compromise is terminal.",
+        "statesExplored": 15876,
+        "transitionsFired": 70400,
+        "status": "Verified",
+        "violatingStates": 0,
+        "durationMs": 56
+      },
+      {
+        "id": "VP-03",
+        "name": "Deadlock Freedom",
+        "formula": "AG (EX true)",
+        "logic": "CTL",
+        "category": "Liveness",
+        "description": "The net contains no dead marking: from every reachable state at least one transition remains enabled.",
+        "statesExplored": 15876,
+        "transitionsFired": 70400,
+        "status": "Verified",
+        "violatingStates": 0,
+        "durationMs": 0
+      },
+      {
+        "id": "VP-04",
+        "name": "Isolation Successful",
+        "formula": "AG ¬(trust(d) = quarantined ∧ canTransmit(d))",
+        "logic": "CTL",
+        "category": "Safety",
+        "description": "Once a device is quarantined, no transmitting transition is enabled for it — neither exfiltration nor lateral infection as a source.",
+        "statesExplored": 15876,
+        "transitionsFired": 70400,
+        "status": "Verified",
+        "violatingStates": 0,
+        "durationMs": 14
+      },
+      {
+        "id": "VP-05",
+        "name": "Malware Containment",
+        "formula": "AG (∃d . place(d) = MalwareExecution → AF (place(d) = Isolation))",
+        "logic": "CTL",
+        "category": "Safety",
+        "description": "Every device that reaches Malware Execution must inevitably reach Isolation. Reachability is not enough — the eventuality has to hold on every path.",
+        "statesExplored": 15876,
+        "transitionsFired": 70400,
+        "status": "Failed",
+        "violatingStates": 5600,
+        "statusUnderFairness": "Failed",
+        "violatingStatesUnderFairness": 1600,
+        "counterexample": [
+          "t-receive(GW-1)",
+          "t-auth(GW-1)",
+          "t-analyse(GW-1)",
+          "t-execute(GW-1)",
+          "<antecedent holds here — the eventuality must now follow>",
+          "t-defer(GW-1)",
+          "t-reobserve(GW-1)",
+          "t-reobserve(GW-1)",
+          "t-reobserve(GW-1)"
+        ],
+        "counterexampleLoopFrom": 8,
+        "durationMs": 229
+      },
+      {
+        "id": "VP-06",
+        "name": "Data Leakage Prevention",
+        "formula": "G ¬(∃d . place(d) = Exfiltration ∧ ¬detected(d))",
+        "logic": "LTL",
+        "category": "Security",
+        "description": "No execution contains a state in which data leaves a device before the detector has ruled on it. Checked as an invariant, which is sound for a safety formula over a finite structure.",
+        "statesExplored": 15876,
+        "transitionsFired": 70400,
+        "status": "Failed",
+        "violatingStates": 3332,
+        "counterexample": [
+          "t-receive(GW-1)",
+          "t-auth(GW-1)",
+          "t-analyse(GW-1)",
+          "t-execute(GW-1)",
+          "t-exfil(GW-1)",
+          "<property violated in the marking above>"
+        ],
+        "durationMs": 11
+      },
+      {
+        "id": "VP-07",
+        "name": "Critical Asset Safety",
+        "formula": "AG ¬(cls(d) = plc ∧ threat(d) = confirmed)",
+        "logic": "CTL",
+        "category": "Security",
+        "description": "The industrial controller never reaches a confirmed-threat state. This is a class-specific guarantee: it quantifies over the device class carried in the token colour, which a flat state-only colour set could not express.",
+        "statesExplored": 15876,
+        "transitionsFired": 70400,
+        "status": "Verified",
+        "violatingStates": 0,
+        "durationMs": 9
+      },
+      {
+        "id": "VP-08",
+        "name": "Lateral Movement Bound",
+        "formula": "AG (|{d : threat(d) = confirmed}| ≤ 2)",
+        "logic": "CTL",
+        "category": "Safety",
+        "description": "At most two devices are ever simultaneously in a confirmed-threat state. Bounds the blast radius of lateral propagation across the modelled segment.",
+        "statesExplored": 15876,
+        "transitionsFired": 70400,
+        "status": "Verified",
+        "violatingStates": 0,
+        "durationMs": 18
+      }
+    ],
+    "passed": 6,
+    "failed": 2,
+    "successRate": 75,
+    "passedUnderFairness": 6
+  },
+  "hardened": {
+    "variant": "hardened",
+    "states": 5184,
+    "transitions": 19888,
+    "terminalStates": 0,
+    "truncated": false,
+    "exploreMs": 362,
+    "results": [
+      {
+        "id": "VP-01",
+        "name": "Authentication Integrity",
+        "formula": "AG ¬(place(d) = MalwareExecution ∧ trust(d) = unknown)",
+        "logic": "CTL",
+        "category": "Security",
+        "description": "No device may reach Malware Execution without having passed through the Authenticate transition. The transition is a cut vertex on every path into the hazardous place.",
+        "statesExplored": 5184,
+        "transitionsFired": 19888,
+        "status": "Verified",
+        "violatingStates": 0,
+        "durationMs": 4
+      },
+      {
+        "id": "VP-02",
+        "name": "Safe State Reachability",
+        "formula": "AG EF (∀d . place(d) ∈ {Idle, Normal, Isolation, Recovery})",
+        "logic": "CTL",
+        "category": "Reachability",
+        "description": "From every reachable state the system retains a path back to a marking in which every device is safe. No compromise is terminal.",
+        "statesExplored": 5184,
+        "transitionsFired": 19888,
+        "status": "Verified",
+        "violatingStates": 0,
+        "durationMs": 34
+      },
+      {
+        "id": "VP-03",
+        "name": "Deadlock Freedom",
+        "formula": "AG (EX true)",
+        "logic": "CTL",
+        "category": "Liveness",
+        "description": "The net contains no dead marking: from every reachable state at least one transition remains enabled.",
+        "statesExplored": 5184,
+        "transitionsFired": 19888,
+        "status": "Verified",
+        "violatingStates": 0,
+        "durationMs": 1
+      },
+      {
+        "id": "VP-04",
+        "name": "Isolation Successful",
+        "formula": "AG ¬(trust(d) = quarantined ∧ canTransmit(d))",
+        "logic": "CTL",
+        "category": "Safety",
+        "description": "Once a device is quarantined, no transmitting transition is enabled for it — neither exfiltration nor lateral infection as a source.",
+        "statesExplored": 5184,
+        "transitionsFired": 19888,
+        "status": "Verified",
+        "violatingStates": 0,
+        "durationMs": 7
+      },
+      {
+        "id": "VP-05",
+        "name": "Malware Containment",
+        "formula": "AG (∃d . place(d) = MalwareExecution → AF (place(d) = Isolation))",
+        "logic": "CTL",
+        "category": "Safety",
+        "description": "Every device that reaches Malware Execution must inevitably reach Isolation. Reachability is not enough — the eventuality has to hold on every path.",
+        "statesExplored": 5184,
+        "transitionsFired": 19888,
+        "status": "Failed",
+        "violatingStates": 1596,
+        "statusUnderFairness": "Verified",
+        "violatingStatesUnderFairness": 0,
+        "counterexample": [
+          "t-receive(GW-1)",
+          "t-auth(GW-1)",
+          "t-analyse(GW-1)",
+          "t-execute(GW-1)",
+          "<antecedent holds here — the eventuality must now follow>",
+          "t-defer(GW-1)",
+          "t-reobserve(GW-1)",
+          "t-reobserve(GW-1)",
+          "t-execute(GW-1)",
+          "t-detect(GW-1)",
+          "t-verify(GW-1)",
+          "t-receive(TH-1)",
+          "t-auth(TH-1)",
+          "t-infect(GW-1 -> TH-1)",
+          "t-reobserve(TH-1)",
+          "t-reobserve(TH-1)",
+          "t-reobserve(TH-1)",
+          "t-execute(TH-1)",
+          "t-detect(TH-1)",
+          "t-verify(TH-1)",
+          "t-receive(PLC-1)",
+          "t-auth(PLC-1)",
+          "t-analyse(PLC-1)",
+          "t-restore(PLC-1)"
+        ],
+        "counterexampleLoopFrom": 20,
+        "durationMs": 90
+      },
+      {
+        "id": "VP-06",
+        "name": "Data Leakage Prevention",
+        "formula": "G ¬(∃d . place(d) = Exfiltration ∧ ¬detected(d))",
+        "logic": "LTL",
+        "category": "Security",
+        "description": "No execution contains a state in which data leaves a device before the detector has ruled on it. Checked as an invariant, which is sound for a safety formula over a finite structure.",
+        "statesExplored": 5184,
+        "transitionsFired": 19888,
+        "status": "Verified",
+        "violatingStates": 0,
+        "durationMs": 3
+      },
+      {
+        "id": "VP-07",
+        "name": "Critical Asset Safety",
+        "formula": "AG ¬(cls(d) = plc ∧ threat(d) = confirmed)",
+        "logic": "CTL",
+        "category": "Security",
+        "description": "The industrial controller never reaches a confirmed-threat state. This is a class-specific guarantee: it quantifies over the device class carried in the token colour, which a flat state-only colour set could not express.",
+        "statesExplored": 5184,
+        "transitionsFired": 19888,
+        "status": "Verified",
+        "violatingStates": 0,
+        "durationMs": 2
+      },
+      {
+        "id": "VP-08",
+        "name": "Lateral Movement Bound",
+        "formula": "AG (|{d : threat(d) = confirmed}| ≤ 2)",
+        "logic": "CTL",
+        "category": "Safety",
+        "description": "At most two devices are ever simultaneously in a confirmed-threat state. Bounds the blast radius of lateral propagation across the modelled segment.",
+        "statesExplored": 5184,
+        "transitionsFired": 19888,
+        "status": "Verified",
+        "violatingStates": 0,
+        "durationMs": 9
+      }
+    ],
+    "passed": 7,
+    "failed": 1,
+    "successRate": 87.5,
+    "passedUnderFairness": 8
+  },
+  "scenarios": [
+    {
+      "id": "SC-1",
+      "title": "Compromised gateway → vulnerable actuator (same zone)",
+      "rationale": "The gateway holds the management plane and shared credentials, so its route to an actuator is strong (2). The thermostat is only standard-hardened (1). 2 > 1, so propagation is admitted.",
+      "source": {
+        "id": "GW-1",
+        "cls": "gateway",
+        "zone": "building",
+        "hard": 0,
+        "exposed": true
+      },
+      "target": {
+        "id": "TH-1",
+        "cls": "thermostat",
+        "zone": "building",
+        "hard": 1,
+        "exposed": false
+      },
+      "expectPropagation": true,
+      "guard": {
+        "zoneOk": true,
+        "strength": 2,
+        "hardening": 1,
+        "admits": true,
+        "explanation": "route strength 2 overcomes hardening 1"
+      },
+      "statesExplored": 1296,
+      "propagated": true,
+      "agreesWithGuard": true
+    },
+    {
+      "id": "SC-2",
+      "title": "Compromised gateway → hardened industrial controller",
+      "rationale": "The same compromised gateway, and the plant zone is routable from the building zone. But the gateway→PLC route is weak (1) and the controller is fully hardened (2). 1 > 2 is false, so the guard denies propagation. Reachability alone is not sufficient — the pair relation decides.",
+      "source": {
+        "id": "GW-1",
+        "cls": "gateway",
+        "zone": "building",
+        "hard": 0,
+        "exposed": true
+      },
+      "target": {
+        "id": "PLC-1",
+        "cls": "plc",
+        "zone": "plant",
+        "hard": 2,
+        "exposed": false
+      },
+      "expectPropagation": false,
+      "guard": {
+        "zoneOk": true,
+        "strength": 1,
+        "hardening": 2,
+        "admits": false,
+        "explanation": "route strength 1 does not overcome hardening 2"
+      },
+      "statesExplored": 144,
+      "propagated": false,
+      "agreesWithGuard": true
+    },
+    {
+      "id": "SC-3",
+      "title": "Compromised sensor → temperature actuator",
+      "rationale": "The interaction raised in supervision. An actuator that consumes a sensor topic without validating the payload gives the sensor a strong route (2) against standard hardening (1). Propagation is admitted — and note the sensor could not reach a camera at all.",
+      "source": {
+        "id": "SEN-1",
+        "cls": "sensor",
+        "zone": "building",
+        "hard": 0,
+        "exposed": true
+      },
+      "target": {
+        "id": "TH-2",
+        "cls": "thermostat",
+        "zone": "building",
+        "hard": 1,
+        "exposed": false
+      },
+      "expectPropagation": true,
+      "guard": {
+        "zoneOk": true,
+        "strength": 2,
+        "hardening": 1,
+        "admits": true,
+        "explanation": "route strength 2 overcomes hardening 1"
+      },
+      "statesExplored": 1296,
+      "propagated": true,
+      "agreesWithGuard": true
+    },
+    {
+      "id": "SC-4",
+      "title": "Compromised sensor → smart camera",
+      "rationale": "Same compromised sensor, same zone, same hardening as the actuator above — but no route exists between these classes (strength 0). The difference in outcome is attributable to device class alone, which is precisely what a state-only colour set could not express.",
+      "source": {
+        "id": "SEN-1",
+        "cls": "sensor",
+        "zone": "building",
+        "hard": 0,
+        "exposed": true
+      },
+      "target": {
+        "id": "CAM-1",
+        "cls": "camera",
+        "zone": "building",
+        "hard": 1,
+        "exposed": false
+      },
+      "expectPropagation": false,
+      "guard": {
+        "zoneOk": true,
+        "strength": 0,
+        "hardening": 1,
+        "admits": false,
+        "explanation": "no route exists from Motion Sensor to Smart Camera"
+      },
+      "statesExplored": 144,
+      "propagated": false,
+      "agreesWithGuard": true
+    },
+    {
+      "id": "SC-5",
+      "title": "Cross-zone: compromised clinical monitor → plant controller",
+      "rationale": "Segmentation, not susceptibility. The clinical and plant zones are mutually unreachable under the segment policy, so the guard fails on the zone conjunct before susceptibility is ever considered.",
+      "source": {
+        "id": "MON-1",
+        "cls": "monitor",
+        "zone": "clinical",
+        "hard": 0,
+        "exposed": true
+      },
+      "target": {
+        "id": "PLC-2",
+        "cls": "plc",
+        "zone": "plant",
+        "hard": 0,
+        "exposed": false
+      },
+      "expectPropagation": false,
+      "guard": {
+        "zoneOk": false,
+        "strength": 0,
+        "hardening": 0,
+        "admits": false,
+        "explanation": "zone clinical cannot route to plant"
+      },
+      "statesExplored": 144,
+      "propagated": false,
+      "agreesWithGuard": true
+    },
+    {
+      "id": "SC-6",
+      "title": "Cross-zone permitted: compromised gateway → clinical monitor",
+      "rationale": "The building zone adjoins the clinical VLAN, and an unpatched monitor (0) falls to the gateway route (1). Shows the zone relation permitting as well as denying — the control is a policy, not a blanket block.",
+      "source": {
+        "id": "GW-2",
+        "cls": "gateway",
+        "zone": "building",
+        "hard": 0,
+        "exposed": true
+      },
+      "target": {
+        "id": "MON-2",
+        "cls": "monitor",
+        "zone": "clinical",
+        "hard": 0,
+        "exposed": false
+      },
+      "expectPropagation": true,
+      "guard": {
+        "zoneOk": true,
+        "strength": 1,
+        "hardening": 0,
+        "admits": true,
+        "explanation": "route strength 1 overcomes hardening 0"
+      },
+      "statesExplored": 1296,
+      "propagated": true,
+      "agreesWithGuard": true
+    }
+  ]
+}

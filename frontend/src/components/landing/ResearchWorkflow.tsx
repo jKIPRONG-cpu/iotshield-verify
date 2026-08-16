@@ -66,7 +66,7 @@ const STAGES: Stage[] = [
   {
     icon: ShieldCheck,
     title: 'Formal Verification',
-    body: 'CTL and LTL properties model-checked against the reachability graph.',
+    body: 'Eight CTL and LTL properties model-checked against the exhaustively explored reachability graph.',
   },
   {
     icon: Gauge,
