@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<org.eventb.core.contextFile org.eventb.core.configuration="org.eventb.core.fwd" org.eventb.core.comment="The three-device configuration verified by the IoTShield model checker (for ProB)." version="3">
+<org.eventb.core.extendsContext name="_1" org.eventb.core.target="C1_Lifecycle"/>
+<org.eventb.core.constant name="_2" org.eventb.core.identifier="GW1"/>
+<org.eventb.core.constant name="_3" org.eventb.core.identifier="TH1"/>
+<org.eventb.core.constant name="_4" org.eventb.core.identifier="PLC1"/>
+<org.eventb.core.constant name="_5" org.eventb.core.identifier="gateway"/>
+<org.eventb.core.constant name="_6" org.eventb.core.identifier="thermostat"/>
+<org.eventb.core.constant name="_7" org.eventb.core.identifier="plc"/>
+<org.eventb.core.constant name="_8" org.eventb.core.identifier="building"/>
+<org.eventb.core.constant name="_9" org.eventb.core.identifier="plant"/>
+<org.eventb.core.axiom name="_10" org.eventb.core.label="axm1" org.eventb.core.predicate="partition(DEV,{GW1},{TH1},{PLC1})" org.eventb.core.theorem="false"/>
+<org.eventb.core.axiom name="_11" org.eventb.core.label="axm2" org.eventb.core.predicate="partition(CLASS,{gateway},{thermostat},{plc})" org.eventb.core.theorem="false"/>
+<org.eventb.core.axiom name="_12" org.eventb.core.label="axm3" org.eventb.core.predicate="partition(ZONE,{building},{plant})" org.eventb.core.theorem="false"/>
+<org.eventb.core.axiom name="_13" org.eventb.core.label="axm4" org.eventb.core.predicate="EXPOSED = {GW1}" org.eventb.core.theorem="false"/>
+<org.eventb.core.axiom name="_14" org.eventb.core.label="axm5" org.eventb.core.predicate="CRITICAL = {PLC1}" org.eventb.core.theorem="false"/>
+<org.eventb.core.axiom name="_15" org.eventb.core.label="axm6" org.eventb.core.predicate="cls = {GW1 ↦ gateway, TH1 ↦ thermostat, PLC1 ↦ plc}" org.eventb.core.theorem="false"/>
+<org.eventb.core.axiom name="_16" org.eventb.core.label="axm7" org.eventb.core.predicate="zone = {GW1 ↦ building, TH1 ↦ building, PLC1 ↦ plant}" org.eventb.core.theorem="false"/>
+<org.eventb.core.axiom name="_17" org.eventb.core.label="axm8" org.eventb.core.predicate="hard = {GW1 ↦ 0, TH1 ↦ 1, PLC1 ↦ 2}" org.eventb.core.theorem="false"/>
+<org.eventb.core.axiom name="_18" org.eventb.core.label="axm9" org.eventb.core.predicate="adj = ZONE × ZONE" org.eventb.core.theorem="false"/>
+<org.eventb.core.axiom name="_19" org.eventb.core.label="axm10" org.eventb.core.predicate="strength = {(gateway ↦ gateway) ↦ 2, (gateway ↦ thermostat) ↦ 0, (gateway ↦ plc) ↦ 1, (thermostat ↦ gateway) ↦ 2, (thermostat ↦ thermostat) ↦ 1, (thermostat ↦ plc) ↦ 0, (plc ↦ gateway) ↦ 1, (plc ↦ thermostat) ↦ 0, (plc ↦ plc) ↦ 1}" org.eventb.core.theorem="false"/>
+</org.eventb.core.contextFile>

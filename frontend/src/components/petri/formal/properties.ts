@@ -129,12 +129,12 @@ export function propertySpecs(devices: DeviceProfile[] = VERIFIED_DEVICES): Prop
     {
       id: 'VP-05',
       name: 'Malware Containment',
-      formula: 'AG (∃d . place(d) = MalwareExecution → AF (place(d) = Isolation))',
+      formula: 'AG ((∃d . place(d) = MalwareExecution) → AF (∃d . place(d) = Isolation))',
       logic: 'CTL',
-      category: 'Safety',
+      category: 'Liveness',
       kind: 'inevitability',
       description:
-        'Every device that reaches Malware Execution must inevitably reach Isolation. Reachability is not enough — the eventuality has to hold on every path.',
+        'Whenever a device is in Malware Execution, a device must inevitably reach Isolation. Reachability is not enough — the eventuality has to hold on every path. (The stricter per-device reading, checked in tools/crosscheck_model.py, gives the same verdicts.)',
       antecedent: (m) => some(m, (d) => d.place === 'malware'),
       target: (m) => some(m, (d) => d.place === 'isolate'),
     },

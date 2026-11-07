@@ -1,0 +1,92 @@
+$ npm run build
+started: 2026-11-07T17:48:05+03:00
+
+> iotshield-verify@1.0.0 build
+> npm --prefix frontend run build
+
+
+> iotshield-verify-frontend@1.0.0 build
+> vite build
+
+vite v8.2.0 building client environment for production...
+[2Ktransforming...✓ 2931 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                                                   1.27 kB │ gzip:   0.55 kB
+dist/assets/jetbrains-mono-greek-400-normal-C190GLew.woff2        4.22 kB
+dist/assets/jetbrains-mono-greek-500-normal-JpySY46c.woff2        4.28 kB
+dist/assets/jetbrains-mono-cyrillic-400-normal-BEIGL1Tu.woff2     5.32 kB
+dist/assets/jetbrains-mono-cyrillic-500-normal-DmUKJPL_.woff2     5.35 kB
+dist/assets/jetbrains-mono-vietnamese-400-normal-CqNFfHCs.woff    5.37 kB
+dist/assets/jetbrains-mono-vietnamese-500-normal-DNRqzVM1.woff    5.47 kB
+dist/assets/jetbrains-mono-greek-400-normal-B9oWc5Lo.woff         5.66 kB
+dist/assets/jetbrains-mono-greek-500-normal-D7SFKleX.woff         5.72 kB
+dist/assets/jetbrains-mono-cyrillic-400-normal-ugxPyKxw.woff      6.97 kB
+dist/assets/jetbrains-mono-cyrillic-500-normal-DJqRU3vO.woff      7.02 kB
+dist/assets/jetbrains-mono-latin-ext-400-normal-Bc8Ftmh3.woff2    7.33 kB
+dist/assets/jetbrains-mono-latin-ext-500-normal-Cut-4mMH.woff2    7.52 kB
+dist/assets/jetbrains-mono-latin-ext-400-normal-fXTG6kC5.woff    10.12 kB
+dist/assets/inter-vietnamese-wght-normal-CBcvBZtf.woff2          10.25 kB
+dist/assets/jetbrains-mono-latin-ext-500-normal-ckzbgY84.woff    10.33 kB
+dist/assets/inter-greek-ext-wght-normal-DlzME5K_.woff2           11.23 kB
+dist/assets/inter-cyrillic-wght-normal-DqGufNeO.woff2            18.74 kB
+dist/assets/inter-greek-wght-normal-CkhJZR-_.woff2               18.99 kB
+dist/assets/jetbrains-mono-latin-400-normal-V6pRDFza.woff2       21.16 kB
+dist/assets/jetbrains-mono-latin-500-normal-BWZEU5yA.woff2       21.83 kB
+dist/assets/inter-cyrillic-ext-wght-normal-BOeWTOD4.woff2        25.96 kB
+dist/assets/jetbrains-mono-latin-400-normal-6-qcROiO.woff        27.49 kB
+dist/assets/jetbrains-mono-latin-500-normal-CJOVTJB7.woff        28.20 kB
+dist/assets/inter-latin-wght-normal-Dx4kXJAl.woff2               48.25 kB
+dist/assets/inter-latin-ext-wght-normal-DO1Apj_S.woff2           85.06 kB
+dist/assets/flow-DLioOiRN.css                                    15.41 kB │ gzip:   2.56 kB
+dist/assets/index-BTZUjaJD.css                                   73.35 kB │ gzip:  24.10 kB
+dist/assets/chevron-right-BcfhePYc.js                             0.12 kB │ gzip:   0.13 kB
+dist/assets/arrow-up-right-BHyhO9Fa.js                            0.15 kB │ gzip:   0.15 kB
+dist/assets/trending-up-BObzZHFJ.js                               0.16 kB │ gzip:   0.16 kB
+dist/assets/target-DPjaWqG6.js                                    0.21 kB │ gzip:   0.15 kB
+dist/assets/download-CPysmGPy.js                                  0.22 kB │ gzip:   0.18 kB
+dist/assets/timer-BZUfrInH.js                                     0.22 kB │ gzip:   0.18 kB
+dist/assets/workflow-C0LMgKRb.js                                  0.25 kB │ gzip:   0.19 kB
+dist/assets/zap-D0deBhjw.js                                       0.26 kB │ gzip:   0.21 kB
+dist/assets/list-checks-C1D8icbL.js                               0.26 kB │ gzip:   0.18 kB
+dist/assets/refresh-cw-CstmvRgX.js                                0.31 kB │ gzip:   0.21 kB
+dist/assets/play-DyqLVm-H.js                                      0.33 kB │ gzip:   0.24 kB
+dist/assets/crosshair-Bpm3IwLm.js                                 0.34 kB │ gzip:   0.21 kB
+dist/assets/network-Bjo0b2W6.js                                   0.37 kB │ gzip:   0.23 kB
+dist/assets/layers-fFOvwfBI.js                                    0.41 kB │ gzip:   0.23 kB
+dist/assets/sigma-BsD0Z743.js                                     0.51 kB │ gzip:   0.30 kB
+dist/assets/fingerprint-pattern-C-wBGmr0.js                       0.60 kB │ gzip:   0.34 kB
+dist/assets/cpu-CQvIl5GL.js                                       0.63 kB │ gzip:   0.28 kB
+dist/assets/server-D_et3CTK.js                                    0.72 kB │ gzip:   0.39 kB
+dist/assets/rolldown-runtime-B0Z9INg1.js                          0.90 kB │ gzip:   0.51 kB
+dist/assets/charts-DSHktaSJ.js                                    5.57 kB │ gzip:   1.91 kB
+dist/assets/Analytics-CH0BWDdK.js                                 6.31 kB │ gzip:   2.36 kB
+dist/assets/Resilience-DQvDl5ZN.js                               10.10 kB │ gzip:   3.65 kB
+dist/assets/Alerts-Dqat-f4I.js                                   10.19 kB │ gzip:   3.52 kB
+dist/assets/NetworkActivity-Dk0TdZX2.js                          10.35 kB │ gzip:   3.93 kB
+dist/assets/Devices-FSwRwMi6.js                                  10.57 kB │ gzip:   3.68 kB
+dist/assets/Settings-EkI9M9D4.js                                 11.22 kB │ gzip:   4.05 kB
+dist/assets/MalwareAnalysis-qAE49Mvh.js                          11.87 kB │ gzip:   3.85 kB
+dist/assets/Dashboard-CI_Oslz-.js                                12.63 kB │ gzip:   4.24 kB
+dist/assets/ThreatDetection-EeqxSKzU.js                          13.60 kB │ gzip:   4.17 kB
+dist/assets/Verification-BByIEK3w.js                             13.76 kB │ gzip:   4.59 kB
+dist/assets/Reports-BowSPhs6.js                                  17.87 kB │ gzip:   5.47 kB
+dist/assets/PetriNet-BlIe0EQp.js                                 23.46 kB │ gzip:   7.74 kB
+dist/assets/router-dDtSehXl.js                                   38.63 kB │ gzip:  13.91 kB
+dist/assets/Landing-DKInq56h.js                                  48.71 kB │ gzip:  12.95 kB
+dist/assets/flow-e1FBuVwB.js                                    124.72 kB │ gzip:  39.96 kB
+dist/assets/motion-BUJBdVXk.js                                  128.02 kB │ gzip:  41.78 kB
+dist/assets/index-B3xDsQZi.js                                   349.23 kB │ gzip: 110.78 kB
+dist/assets/charts-DHE41_zf.js                                  470.98 kB │ gzip: 133.95 kB
+
+✓ built in 3m 53s
+[33m[PLUGIN_TIMINGS] [0mYour build spent 41% of 233.1s inside plugin hooks (94.8s).
+Measured inside the callback, so queue time is excluded and time the callback itself awaited is not:
+  - vite:build-html transform (3%, 6.4s, 1 call)
+Those rows are 3% of the build; the rest of the 41% is below.
+Not measurable — 1 hook whose calls overlap, so elapsed time covers work other calls were doing. Profile with `node --cpu-prof`:
+  - vite:css transform (5 calls)
+See https://rolldown.rs/reference/InputOptions.checks#plugintimings for more details.
+
+
+finished: 2026-11-07T17:52:06+03:00  duration: 241s  exit=0

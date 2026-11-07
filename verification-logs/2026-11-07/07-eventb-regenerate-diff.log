@@ -1,0 +1,23 @@
+$ python3 eventb/tools/generate_rodin_project.py <tmp>/out   (then diff against shipped files)
+2026-11-07T17:43:08+03:00
+written ['.project', 'C0_Abstract.buc', 'C1_Lifecycle.buc', 'C2_Instance.buc', 'M0_Abstract.bum', 'M1_Baseline.bum', 'M1_Hardened.bum', 'M2_BaselineInstance.bum', 'M2_HardenedInstance.bum']
+generator exit=0
+IDENTICAL  C0_Abstract.buc
+IDENTICAL  C1_Lifecycle.buc
+IDENTICAL  C2_Instance.buc
+IDENTICAL  M0_Abstract.bum
+IDENTICAL  M1_Baseline.bum
+IDENTICAL  M1_Hardened.bum
+IDENTICAL  M2_BaselineInstance.bum
+IDENTICAL  M2_HardenedInstance.bum
+IDENTICAL  .project
+IDENTICAL  IoTShield_EventB_listing.txt
+.project
+C0_Abstract.buc
+C1_Lifecycle.buc
+C2_Instance.buc
+M0_Abstract.bum
+M1_Baseline.bum
+M1_Hardened.bum
+M2_BaselineInstance.bum
+M2_HardenedInstance.bum

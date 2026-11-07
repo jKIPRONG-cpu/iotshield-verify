@@ -1,0 +1,8 @@
+$ python3 eventb/tools/check_invariants.py
+started: 2026-11-07T17:40:09+03:00
+hardened pre-states 1498176 invariant breaks 0 refinement breaks 0
+  per-device invariant states: 360
+baseline pre-states 1679616 invariant breaks 0 refinement breaks 0
+  per-device invariant states: 384
+
+finished: 2026-11-07T17:42:53+03:00  duration: 164s  exit=0

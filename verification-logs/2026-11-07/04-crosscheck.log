@@ -1,0 +1,38 @@
+$ npm run verify:crosscheck
+started: 2026-11-07T17:39:05+03:00
+
+> iotshield-verify@1.0.0 verify:crosscheck
+> python3 tools/crosscheck_model.py
+
+
+BASELINE: 15,876 states, 70,400 transitions, 0 terminal
+  VP-01  Verified      0 violating
+  VP-02  Verified      0 violating
+  VP-03  Verified      0 violating
+  VP-04  Verified      0 violating
+  VP-05  Failed     5600 violating  (weak fairness: Failed, 1600 violating)
+  VP-06  Failed     3332 violating
+  VP-07  Verified      0 violating
+  VP-08  Verified      0 violating
+  VP-05 per-device reading: Failed (weak fairness: Failed)
+      GW-1   reaches Malware Execution: True   violating  3528  under weak fairness  2016
+      TH-1   reaches Malware Execution: True   violating  3528  under weak fairness  2016
+      PLC-1  reaches Malware Execution: False  violating     0  under weak fairness     0
+
+HARDENED: 5,184 states, 19,888 transitions, 0 terminal
+  VP-01  Verified      0 violating
+  VP-02  Verified      0 violating
+  VP-03  Verified      0 violating
+  VP-04  Verified      0 violating
+  VP-05  Failed     1596 violating  (weak fairness: Verified, 0 violating)
+  VP-06  Verified      0 violating
+  VP-07  Verified      0 violating
+  VP-08  Verified      0 violating
+  VP-05 per-device reading: Failed (weak fairness: Verified)
+      GW-1   reaches Malware Execution: True   violating  1008  under weak fairness     0
+      TH-1   reaches Malware Execution: True   violating  1008  under weak fairness     0
+      PLC-1  reaches Malware Execution: False  violating     0  under weak fairness     0
+
+Mismatches against published results: 0
+
+finished: 2026-11-07T17:39:08+03:00  duration: 3s  exit=0

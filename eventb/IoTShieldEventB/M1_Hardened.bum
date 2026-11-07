@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<org.eventb.core.machineFile org.eventb.core.configuration="org.eventb.core.fwd" org.eventb.core.comment="Concrete IoTShield net, HARDENED variant (bounded retry, dual-indicator detector, egress hold)." version="5">
+<org.eventb.core.refinesMachine name="_1" org.eventb.core.target="M0_Abstract"/>
+<org.eventb.core.seesContext name="_2" org.eventb.core.target="C1_Lifecycle"/>
+<org.eventb.core.variable name="_3" org.eventb.core.identifier="place"/>
+<org.eventb.core.variable name="_4" org.eventb.core.identifier="trust"/>
+<org.eventb.core.variable name="_5" org.eventb.core.identifier="threat"/>
+<org.eventb.core.variable name="_6" org.eventb.core.identifier="att"/>
+<org.eventb.core.variable name="_7" org.eventb.core.identifier="obs"/>
+<org.eventb.core.variable name="_8" org.eventb.core.identifier="vol"/>
+<org.eventb.core.variable name="_9" org.eventb.core.identifier="detected"/>
+<org.eventb.core.invariant name="_10" org.eventb.core.label="typ1" org.eventb.core.predicate="place ∈ DEV → PLACE" org.eventb.core.theorem="false"/>
+<org.eventb.core.invariant name="_11" org.eventb.core.label="typ2" org.eventb.core.predicate="trust ∈ DEV → TRUST" org.eventb.core.theorem="false"/>
+<org.eventb.core.invariant name="_12" org.eventb.core.label="typ3" org.eventb.core.predicate="threat ∈ DEV → THREAT" org.eventb.core.theorem="false"/>
+<org.eventb.core.invariant name="_13" org.eventb.core.label="typ4" org.eventb.core.predicate="att ∈ DEV → 0‥MAXATT" org.eventb.core.theorem="false"/>
+<org.eventb.core.invariant name="_14" org.eventb.core.label="typ5" org.eventb.core.predicate="obs ∈ DEV → 0‥STH" org.eventb.core.theorem="false"/>
+<org.eventb.core.invariant name="_15" org.eventb.core.label="typ6" org.eventb.core.predicate="vol ∈ DEV → 0‥VMAX" org.eventb.core.theorem="false"/>
+<org.eventb.core.invariant name="_16" org.eventb.core.label="typ7" org.eventb.core.predicate="detected ⊆ DEV" org.eventb.core.theorem="false"/>
+<org.eventb.core.invariant name="_17" org.eventb.core.label="glue1" org.eventb.core.predicate="∀x·x ∈ DEV ⇒ (status(x) = ok ⇔ place(x) ∈ OKP)" org.eventb.core.theorem="false"/>
+<org.eventb.core.invariant name="_18" org.eventb.core.label="glue2" org.eventb.core.predicate="∀x·x ∈ DEV ⇒ (status(x) = compromised ⇔ place(x) ∈ CP)" org.eventb.core.theorem="false"/>
+<org.eventb.core.invariant name="_19" org.eventb.core.label="glue3" org.eventb.core.predicate="∀x·x ∈ DEV ⇒ (status(x) = contained ⇔ place(x) ∈ CTP)" org.eventb.core.theorem="false"/>
+<org.eventb.core.invariant name="_20" org.eventb.core.label="inv1" org.eventb.core.predicate="∀x·x ∈ DEV ⇒ (trust(x) = unknown ⇔ place(x) ∈ {idle,packet})" org.eventb.core.theorem="false"/>
+<org.eventb.core.invariant name="_21" org.eventb.core.label="inv2" org.eventb.core.predicate="∀x·x ∈ DEV ⇒ (trust(x) = quarantined ⇔ place(x) ∈ {isolate,recover})" org.eventb.core.theorem="false"/>
+<org.eventb.core.invariant name="_22" org.eventb.core.label="inv3" org.eventb.core.predicate="∀x·x ∈ DEV ⇒ (threat(x) = none ⇔ place(x) ∈ OKP)" org.eventb.core.theorem="false"/>
+<org.eventb.core.invariant name="_23" org.eventb.core.label="inv4" org.eventb.core.predicate="∀x·x ∈ DEV ∧ threat(x) = suspected ⇒ place(x) = suspicious" org.eventb.core.theorem="false"/>
+<org.eventb.core.invariant name="_24" org.eventb.core.label="inv5" org.eventb.core.predicate="∀x·x ∈ DEV ∧ place(x) ∈ {malware,exfil,detect,verify,isolate,recover} ⇒ threat(x) = confirmed" org.eventb.core.theorem="false"/>
+<org.eventb.core.invariant name="_25" org.eventb.core.label="inv6" org.eventb.core.predicate="∀x·x ∈ DEV ∧ place(x) ∈ {suspicious,malware,exfil} ⇒ obs(x) ≥ 1" org.eventb.core.theorem="false"/>
+<org.eventb.core.invariant name="_26" org.eventb.core.label="inv7" org.eventb.core.predicate="∀x·x ∈ DEV ⇒ (x ∈ detected ⇔ place(x) ∈ {detect,verify,isolate,recover})" org.eventb.core.theorem="false"/>
+<org.eventb.core.invariant name="_27" org.eventb.core.label="vp01" org.eventb.core.predicate="∀x·x ∈ DEV ∧ place(x) = malware ⇒ trust(x) ≠ unknown" org.eventb.core.theorem="true"/>
+<org.eventb.core.invariant name="_28" org.eventb.core.label="vp04" org.eventb.core.predicate="∀x·x ∈ DEV ∧ trust(x) = quarantined ⇒ place(x) ∉ {malware,exfil}" org.eventb.core.theorem="true"/>
+<org.eventb.core.invariant name="_29" org.eventb.core.label="vp06" org.eventb.core.predicate="∀x·x ∈ DEV ∧ place(x) = exfil ⇒ x ∈ detected" org.eventb.core.theorem="false"/>
+<org.eventb.core.invariant name="_30" org.eventb.core.label="vp07" org.eventb.core.predicate="∀c·c ∈ CRITICAL ⇒ threat(c) = none" org.eventb.core.theorem="true"/>
+<org.eventb.core.invariant name="_31" org.eventb.core.label="dlf" org.eventb.core.predicate="∀x·x ∈ DEV ⇒ (place(x) ∈ {idle,auth,suspicious,exfil,detect,verify,isolate,recover,normal} ∨ (place(x) = packet ∧ trust(x) ≠ quarantined) ∨ (place(x) = malware ∧ (att(x) &lt; MAXATT ∨ obs(x) ≥ STH ∨ att(x) ≥ MAXATT ∨ vol(x) ≥ VTH)))" org.eventb.core.theorem="true"/>
+<org.eventb.core.event name="_32" org.eventb.core.convergence="0" org.eventb.core.extended="false" org.eventb.core.label="INITIALISATION">
+  <org.eventb.core.action name="_1" org.eventb.core.assignment="place ≔ DEV × {idle}" org.eventb.core.label="act1"/>
+  <org.eventb.core.action name="_2" org.eventb.core.assignment="trust ≔ DEV × {unknown}" org.eventb.core.label="act2"/>
+  <org.eventb.core.action name="_3" org.eventb.core.assignment="threat ≔ DEV × {none}" org.eventb.core.label="act3"/>
+  <org.eventb.core.action name="_4" org.eventb.core.assignment="att ≔ DEV × {0}" org.eventb.core.label="act4"/>
+  <org.eventb.core.action name="_5" org.eventb.core.assignment="obs ≔ DEV × {0}" org.eventb.core.label="act5"/>
+  <org.eventb.core.action name="_6" org.eventb.core.assignment="vol ≔ DEV × {0}" org.eventb.core.label="act6"/>
+  <org.eventb.core.action name="_7" org.eventb.core.assignment="detected ≔ ∅" org.eventb.core.label="act7"/>
+</org.eventb.core.event>
+<org.eventb.core.event name="_33" org.eventb.core.convergence="0" org.eventb.core.extended="false" org.eventb.core.label="Receive" org.eventb.core.comment="CPN t-receive">
+  <org.eventb.core.parameter name="_1" org.eventb.core.identifier="d"/>
+  <org.eventb.core.guard name="_2" org.eventb.core.label="grd1" org.eventb.core.predicate="d ∈ DEV"/>
+  <org.eventb.core.guard name="_3" org.eventb.core.label="grd2" org.eventb.core.predicate="place(d) = idle"/>
+  <org.eventb.core.action name="_4" org.eventb.core.assignment="place(d) ≔ packet" org.eventb.core.label="act1"/>
+</org.eventb.core.event>
+<org.eventb.core.event name="_34" org.eventb.core.convergence="0" org.eventb.core.extended="false" org.eventb.core.label="Authenticate" org.eventb.core.comment="CPN t-auth">
+  <org.eventb.core.parameter name="_1" org.eventb.core.identifier="d"/>
+  <org.eventb.core.guard name="_2" org.eventb.core.label="grd1" org.eventb.core.predicate="d ∈ DEV"/>
+  <org.eventb.core.guard name="_3" org.eventb.core.label="grd2" org.eventb.core.predicate="place(d) = packet"/>
+  <org.eventb.core.guard name="_4" org.eventb.core.label="grd3" org.eventb.core.predicate="trust(d) ≠ quarantined"/>
+  <org.eventb.core.action name="_5" org.eventb.core.assignment="place(d) ≔ auth" org.eventb.core.label="act1"/>
+  <org.eventb.core.action name="_6" org.eventb.core.assignment="trust(d) ≔ authenticated" org.eventb.core.label="act2"/>
+</org.eventb.core.event>
+<org.eventb.core.event name="_35" org.eventb.core.convergence="0" org.eventb.core.extended="false" org.eventb.core.label="AnalyseNormal" org.eventb.core.comment="CPN t-analyse, benign outcome">
+  <org.eventb.core.parameter name="_1" org.eventb.core.identifier="d"/>
+  <org.eventb.core.guard name="_2" org.eventb.core.label="grd1" org.eventb.core.predicate="d ∈ DEV"/>
+  <org.eventb.core.guard name="_3" org.eventb.core.label="grd2" org.eventb.core.predicate="place(d) = auth"/>
+  <org.eventb.core.action name="_4" org.eventb.core.assignment="place(d) ≔ normal" org.eventb.core.label="act1"/>
+</org.eventb.core.event>
+<org.eventb.core.event name="_36" org.eventb.core.convergence="0" org.eventb.core.extended="false" org.eventb.core.label="AnalyseSuspicious" org.eventb.core.comment="CPN t-analyse, suspicious outcome (exposed devices only)">
+  <org.eventb.core.refinesEvent name="_1" org.eventb.core.target="compromise_external"/>
+  <org.eventb.core.parameter name="_2" org.eventb.core.identifier="d"/>
+  <org.eventb.core.guard name="_3" org.eventb.core.label="grd1" org.eventb.core.predicate="d ∈ EXPOSED"/>
+  <org.eventb.core.guard name="_4" org.eventb.core.label="grd2" org.eventb.core.predicate="place(d) = auth"/>
+  <org.eventb.core.action name="_5" org.eventb.core.assignment="place(d) ≔ suspicious" org.eventb.core.label="act1"/>
+  <org.eventb.core.action name="_6" org.eventb.core.assignment="threat(d) ≔ suspected" org.eventb.core.label="act2"/>
+  <org.eventb.core.action name="_7" org.eventb.core.assignment="obs(d) ≔ min({obs(d) + 1, STH})" org.eventb.core.label="act3"/>
+  <org.eventb.core.action name="_8" org.eventb.core.assignment="vol(d) ≔ min({vol(d) + 1, VMAX})" org.eventb.core.label="act4"/>
+</org.eventb.core.event>
+<org.eventb.core.event name="_37" org.eventb.core.convergence="0" org.eventb.core.extended="false" org.eventb.core.label="ReObserve" org.eventb.core.comment="CPN t-reobserve">
+  <org.eventb.core.parameter name="_1" org.eventb.core.identifier="d"/>
+  <org.eventb.core.guard name="_2" org.eventb.core.label="grd1" org.eventb.core.predicate="d ∈ DEV"/>
+  <org.eventb.core.guard name="_3" org.eventb.core.label="grd2" org.eventb.core.predicate="place(d) = suspicious"/>
+  <org.eventb.core.guard name="_4" org.eventb.core.label="grd3" org.eventb.core.predicate="att(d) &lt; MAXATT"/>
+  <org.eventb.core.action name="_5" org.eventb.core.assignment="obs(d) ≔ min({obs(d) + 1, STH})" org.eventb.core.label="act1"/>
+  <org.eventb.core.action name="_6" org.eventb.core.assignment="att(d) ≔ att(d) + 1" org.eventb.core.label="act2"/>
+</org.eventb.core.event>
+<org.eventb.core.event name="_38" org.eventb.core.convergence="0" org.eventb.core.extended="false" org.eventb.core.label="ExecutePayload" org.eventb.core.comment="CPN t-execute">
+  <org.eventb.core.parameter name="_1" org.eventb.core.identifier="d"/>
+  <org.eventb.core.guard name="_2" org.eventb.core.label="grd1" org.eventb.core.predicate="d ∈ DEV"/>
+  <org.eventb.core.guard name="_3" org.eventb.core.label="grd2" org.eventb.core.predicate="place(d) = suspicious"/>
+  <org.eventb.core.action name="_4" org.eventb.core.assignment="place(d) ≔ malware" org.eventb.core.label="act1"/>
+  <org.eventb.core.action name="_5" org.eventb.core.assignment="threat(d) ≔ confirmed" org.eventb.core.label="act2"/>
+</org.eventb.core.event>
+<org.eventb.core.event name="_39" org.eventb.core.convergence="0" org.eventb.core.extended="false" org.eventb.core.label="DeferContainment" org.eventb.core.comment="CPN t-defer (the containment defect)">
+  <org.eventb.core.parameter name="_1" org.eventb.core.identifier="d"/>
+  <org.eventb.core.guard name="_2" org.eventb.core.label="grd1" org.eventb.core.predicate="d ∈ DEV"/>
+  <org.eventb.core.guard name="_3" org.eventb.core.label="grd2" org.eventb.core.predicate="place(d) = malware"/>
+  <org.eventb.core.guard name="_4" org.eventb.core.label="grd3" org.eventb.core.predicate="att(d) &lt; MAXATT"/>
+  <org.eventb.core.action name="_5" org.eventb.core.assignment="place(d) ≔ suspicious" org.eventb.core.label="act1"/>
+  <org.eventb.core.action name="_6" org.eventb.core.assignment="att(d) ≔ att(d) + 1" org.eventb.core.label="act2"/>
+</org.eventb.core.event>
+<org.eventb.core.event name="_40" org.eventb.core.convergence="0" org.eventb.core.extended="false" org.eventb.core.label="Exfiltrate" org.eventb.core.comment="CPN t-exfil">
+  <org.eventb.core.parameter name="_1" org.eventb.core.identifier="d"/>
+  <org.eventb.core.guard name="_2" org.eventb.core.label="grd1" org.eventb.core.predicate="d ∈ DEV"/>
+  <org.eventb.core.guard name="_3" org.eventb.core.label="grd2" org.eventb.core.predicate="place(d) = malware"/>
+  <org.eventb.core.guard name="_4" org.eventb.core.label="grd3" org.eventb.core.predicate="trust(d) ≠ quarantined"/>
+  <org.eventb.core.guard name="_5" org.eventb.core.label="grd4" org.eventb.core.predicate="d ∈ detected ∨ obs(d) = 0"/>
+  <org.eventb.core.action name="_6" org.eventb.core.assignment="place(d) ≔ exfil" org.eventb.core.label="act1"/>
+  <org.eventb.core.action name="_7" org.eventb.core.assignment="vol(d) ≔ min({vol(d) + 1, VMAX})" org.eventb.core.label="act2"/>
+</org.eventb.core.event>
+<org.eventb.core.event name="_41" org.eventb.core.convergence="0" org.eventb.core.extended="false" org.eventb.core.label="ResumeExecution" org.eventb.core.comment="CPN t-resume">
+  <org.eventb.core.parameter name="_1" org.eventb.core.identifier="d"/>
+  <org.eventb.core.guard name="_2" org.eventb.core.label="grd1" org.eventb.core.predicate="d ∈ DEV"/>
+  <org.eventb.core.guard name="_3" org.eventb.core.label="grd2" org.eventb.core.predicate="place(d) = exfil"/>
+  <org.eventb.core.action name="_4" org.eventb.core.assignment="place(d) ≔ malware" org.eventb.core.label="act1"/>
+</org.eventb.core.event>
+<org.eventb.core.event name="_42" org.eventb.core.convergence="0" org.eventb.core.extended="false" org.eventb.core.label="DetectMalware" org.eventb.core.comment="CPN t-detect">
+  <org.eventb.core.parameter name="_1" org.eventb.core.identifier="d"/>
+  <org.eventb.core.guard name="_2" org.eventb.core.label="grd1" org.eventb.core.predicate="d ∈ DEV"/>
+  <org.eventb.core.guard name="_3" org.eventb.core.label="grd2" org.eventb.core.predicate="place(d) ∈ {suspicious,malware,exfil}"/>
+  <org.eventb.core.guard name="_4" org.eventb.core.label="grd3" org.eventb.core.predicate="obs(d) ≥ STH ∨ att(d) ≥ MAXATT ∨ vol(d) ≥ VTH"/>
+  <org.eventb.core.action name="_5" org.eventb.core.assignment="place(d) ≔ detect" org.eventb.core.label="act1"/>
+  <org.eventb.core.action name="_6" org.eventb.core.assignment="threat(d) ≔ confirmed" org.eventb.core.label="act2"/>
+  <org.eventb.core.action name="_7" org.eventb.core.assignment="detected ≔ detected ∪ {d}" org.eventb.core.label="act3"/>
+</org.eventb.core.event>
+<org.eventb.core.event name="_43" org.eventb.core.convergence="0" org.eventb.core.extended="false" org.eventb.core.label="VerifyProperties" org.eventb.core.comment="CPN t-verify">
+  <org.eventb.core.parameter name="_1" org.eventb.core.identifier="d"/>
+  <org.eventb.core.guard name="_2" org.eventb.core.label="grd1" org.eventb.core.predicate="d ∈ DEV"/>
+  <org.eventb.core.guard name="_3" org.eventb.core.label="grd2" org.eventb.core.predicate="place(d) = detect"/>
+  <org.eventb.core.action name="_4" org.eventb.core.assignment="place(d) ≔ verify" org.eventb.core.label="act1"/>
+</org.eventb.core.event>
+<org.eventb.core.event name="_44" org.eventb.core.convergence="0" org.eventb.core.extended="false" org.eventb.core.label="IsolateDevice" org.eventb.core.comment="CPN t-isolate">
+  <org.eventb.core.refinesEvent name="_1" org.eventb.core.target="contain"/>
+  <org.eventb.core.parameter name="_2" org.eventb.core.identifier="d"/>
+  <org.eventb.core.guard name="_3" org.eventb.core.label="grd1" org.eventb.core.predicate="d ∈ DEV"/>
+  <org.eventb.core.guard name="_4" org.eventb.core.label="grd2" org.eventb.core.predicate="place(d) = verify"/>
+  <org.eventb.core.action name="_5" org.eventb.core.assignment="place(d) ≔ isolate" org.eventb.core.label="act1"/>
+  <org.eventb.core.action name="_6" org.eventb.core.assignment="trust(d) ≔ quarantined" org.eventb.core.label="act2"/>
+</org.eventb.core.event>
+<org.eventb.core.event name="_45" org.eventb.core.convergence="0" org.eventb.core.extended="false" org.eventb.core.label="RecoverDevice" org.eventb.core.comment="CPN t-recover">
+  <org.eventb.core.parameter name="_1" org.eventb.core.identifier="d"/>
+  <org.eventb.core.guard name="_2" org.eventb.core.label="grd1" org.eventb.core.predicate="d ∈ DEV"/>
+  <org.eventb.core.guard name="_3" org.eventb.core.label="grd2" org.eventb.core.predicate="place(d) = isolate"/>
+  <org.eventb.core.action name="_4" org.eventb.core.assignment="place(d) ≔ recover" org.eventb.core.label="act1"/>
+</org.eventb.core.event>
+<org.eventb.core.event name="_46" org.eventb.core.convergence="0" org.eventb.core.extended="false" org.eventb.core.label="RestoreNormal" org.eventb.core.comment="CPN t-restore from Normal Behaviour">
+  <org.eventb.core.parameter name="_1" org.eventb.core.identifier="d"/>
+  <org.eventb.core.guard name="_2" org.eventb.core.label="grd1" org.eventb.core.predicate="d ∈ DEV"/>
+  <org.eventb.core.guard name="_3" org.eventb.core.label="grd2" org.eventb.core.predicate="place(d) = normal"/>
+  <org.eventb.core.action name="_4" org.eventb.core.assignment="place(d) ≔ idle" org.eventb.core.label="act1"/>
+  <org.eventb.core.action name="_5" org.eventb.core.assignment="trust(d) ≔ unknown" org.eventb.core.label="act2"/>
+  <org.eventb.core.action name="_6" org.eventb.core.assignment="threat(d) ≔ none" org.eventb.core.label="act3"/>
+  <org.eventb.core.action name="_7" org.eventb.core.assignment="att(d) ≔ 0" org.eventb.core.label="act4"/>
+  <org.eventb.core.action name="_8" org.eventb.core.assignment="obs(d) ≔ 0" org.eventb.core.label="act5"/>
+  <org.eventb.core.action name="_9" org.eventb.core.assignment="vol(d) ≔ 0" org.eventb.core.label="act6"/>
+  <org.eventb.core.action name="_10" org.eventb.core.assignment="detected ≔ detected ∖ {d}" org.eventb.core.label="act7"/>
+</org.eventb.core.event>
+<org.eventb.core.event name="_47" org.eventb.core.convergence="0" org.eventb.core.extended="false" org.eventb.core.label="RestoreRecovered" org.eventb.core.comment="CPN t-restore from Recovery">
+  <org.eventb.core.refinesEvent name="_1" org.eventb.core.target="release"/>
+  <org.eventb.core.parameter name="_2" org.eventb.core.identifier="d"/>
+  <org.eventb.core.guard name="_3" org.eventb.core.label="grd1" org.eventb.core.predicate="d ∈ DEV"/>
+  <org.eventb.core.guard name="_4" org.eventb.core.label="grd2" org.eventb.core.predicate="place(d) = recover"/>
+  <org.eventb.core.action name="_5" org.eventb.core.assignment="place(d) ≔ idle" org.eventb.core.label="act1"/>
+  <org.eventb.core.action name="_6" org.eventb.core.assignment="trust(d) ≔ unknown" org.eventb.core.label="act2"/>
+  <org.eventb.core.action name="_7" org.eventb.core.assignment="threat(d) ≔ none" org.eventb.core.label="act3"/>
+  <org.eventb.core.action name="_8" org.eventb.core.assignment="att(d) ≔ 0" org.eventb.core.label="act4"/>
+  <org.eventb.core.action name="_9" org.eventb.core.assignment="obs(d) ≔ 0" org.eventb.core.label="act5"/>
+  <org.eventb.core.action name="_10" org.eventb.core.assignment="vol(d) ≔ 0" org.eventb.core.label="act6"/>
+  <org.eventb.core.action name="_11" org.eventb.core.assignment="detected ≔ detected ∖ {d}" org.eventb.core.label="act7"/>
+</org.eventb.core.event>
+<org.eventb.core.event name="_48" org.eventb.core.convergence="0" org.eventb.core.extended="false" org.eventb.core.label="LateralInfect" org.eventb.core.comment="CPN t-infect: two-token binding over class, zone and hardening">
+  <org.eventb.core.refinesEvent name="_1" org.eventb.core.target="compromise_lateral"/>
+  <org.eventb.core.parameter name="_2" org.eventb.core.identifier="s"/>
+  <org.eventb.core.parameter name="_3" org.eventb.core.identifier="d"/>
+  <org.eventb.core.guard name="_4" org.eventb.core.label="grd1" org.eventb.core.predicate="s ∈ DEV"/>
+  <org.eventb.core.guard name="_5" org.eventb.core.label="grd2" org.eventb.core.predicate="d ∈ DEV"/>
+  <org.eventb.core.guard name="_6" org.eventb.core.label="grd3" org.eventb.core.predicate="s ≠ d"/>
+  <org.eventb.core.guard name="_7" org.eventb.core.label="grd4" org.eventb.core.predicate="threat(s) = confirmed"/>
+  <org.eventb.core.guard name="_8" org.eventb.core.label="grd5" org.eventb.core.predicate="trust(s) ≠ quarantined"/>
+  <org.eventb.core.guard name="_9" org.eventb.core.label="grd6" org.eventb.core.predicate="threat(d) = none"/>
+  <org.eventb.core.guard name="_10" org.eventb.core.label="grd7" org.eventb.core.predicate="trust(d) = authenticated"/>
+  <org.eventb.core.guard name="_11" org.eventb.core.label="grd8" org.eventb.core.predicate="zone(s) ↦ zone(d) ∈ adj"/>
+  <org.eventb.core.guard name="_12" org.eventb.core.label="grd9" org.eventb.core.predicate="strength(cls(d) ↦ cls(s)) &gt; hard(d)"/>
+  <org.eventb.core.action name="_13" org.eventb.core.assignment="place(d) ≔ suspicious" org.eventb.core.label="act1"/>
+  <org.eventb.core.action name="_14" org.eventb.core.assignment="threat(d) ≔ suspected" org.eventb.core.label="act2"/>
+  <org.eventb.core.action name="_15" org.eventb.core.assignment="obs(d) ≔ min({obs(d) + 1, STH})" org.eventb.core.label="act3"/>
+  <org.eventb.core.action name="_16" org.eventb.core.assignment="vol(d) ≔ min({vol(d) + 1, VMAX})" org.eventb.core.label="act4"/>
+</org.eventb.core.event>
+</org.eventb.core.machineFile>

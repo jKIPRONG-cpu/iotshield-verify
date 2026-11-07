@@ -1,0 +1,131 @@
+$ python3 tools/crosscheck_model.py --json
+started: 2026-11-07T17:39:08+03:00
+{
+  "baseline": {
+    "states": 15876,
+    "transitions": 70400,
+    "terminal": 0,
+    "properties": {
+      "VP-01": {
+        "status": "Verified",
+        "violating": 0
+      },
+      "VP-02": {
+        "status": "Verified",
+        "violating": 0
+      },
+      "VP-03": {
+        "status": "Verified",
+        "violating": 0
+      },
+      "VP-04": {
+        "status": "Verified",
+        "violating": 0
+      },
+      "VP-05": {
+        "status": "Failed",
+        "violating": 5600,
+        "fair_status": "Failed",
+        "fair_violating": 1600
+      },
+      "VP-06": {
+        "status": "Failed",
+        "violating": 3332
+      },
+      "VP-07": {
+        "status": "Verified",
+        "violating": 0
+      },
+      "VP-08": {
+        "status": "Verified",
+        "violating": 0
+      },
+      "VP-05-per-device": {
+        "status": "Failed",
+        "fair_status": "Failed",
+        "by_device": {
+          "GW-1": {
+            "reaches_malware": true,
+            "violating": 3528,
+            "fair_violating": 2016
+          },
+          "TH-1": {
+            "reaches_malware": true,
+            "violating": 3528,
+            "fair_violating": 2016
+          },
+          "PLC-1": {
+            "reaches_malware": false,
+            "violating": 0,
+            "fair_violating": 0
+          }
+        }
+      }
+    }
+  },
+  "hardened": {
+    "states": 5184,
+    "transitions": 19888,
+    "terminal": 0,
+    "properties": {
+      "VP-01": {
+        "status": "Verified",
+        "violating": 0
+      },
+      "VP-02": {
+        "status": "Verified",
+        "violating": 0
+      },
+      "VP-03": {
+        "status": "Verified",
+        "violating": 0
+      },
+      "VP-04": {
+        "status": "Verified",
+        "violating": 0
+      },
+      "VP-05": {
+        "status": "Failed",
+        "violating": 1596,
+        "fair_status": "Verified",
+        "fair_violating": 0
+      },
+      "VP-06": {
+        "status": "Verified",
+        "violating": 0
+      },
+      "VP-07": {
+        "status": "Verified",
+        "violating": 0
+      },
+      "VP-08": {
+        "status": "Verified",
+        "violating": 0
+      },
+      "VP-05-per-device": {
+        "status": "Failed",
+        "fair_status": "Verified",
+        "by_device": {
+          "GW-1": {
+            "reaches_malware": true,
+            "violating": 1008,
+            "fair_violating": 0
+          },
+          "TH-1": {
+            "reaches_malware": true,
+            "violating": 1008,
+            "fair_violating": 0
+          },
+          "PLC-1": {
+            "reaches_malware": false,
+            "violating": 0,
+            "fair_violating": 0
+          }
+        }
+      }
+    }
+  },
+  "mismatches_against_published_results": 0
+}
+
+finished: 2026-11-07T17:39:10+03:00  duration: 2s  exit=0

@@ -1,0 +1,8 @@
+$ npm --prefix frontend run typecheck
+started: 2026-11-07T17:43:59+03:00
+
+> iotshield-verify-frontend@1.0.0 typecheck
+> tsc -b --noEmit
+
+
+finished: 2026-11-07T17:44:51+03:00  duration: 52s  exit=0

@@ -1,0 +1,19 @@
+$ npm run verify:backend
+started: 2026-11-07T17:43:19+03:00
+
+> iotshield-verify@1.0.0 verify:backend
+> python3 tools/verify_backend.py
+
+Traceback (most recent call last):
+  File "/mnt/c/Users/Cossy/Desktop/iotshield-verify-main/tools/verify_backend.py", line 28, in <module>
+    from fastapi.testclient import TestClient  # noqa: E402
+  File "/mnt/c/Users/Cossy/Desktop/iotshield-verify-main/backend/.venv/lib/python3.10/site-packages/fastapi/testclient.py", line 1, in <module>
+    from starlette.testclient import TestClient as TestClient  # noqa
+  File "/mnt/c/Users/Cossy/Desktop/iotshield-verify-main/backend/.venv/lib/python3.10/site-packages/starlette/testclient.py", line 41, in <module>
+    raise RuntimeError(
+RuntimeError: The starlette.testclient module requires the httpx2 package to be installed.
+You can install this with:
+    $ pip install httpx2
+
+
+finished: 2026-11-07T17:43:29+03:00  duration: 10s  exit=1

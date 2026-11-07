@@ -1,0 +1,85 @@
+INFO:     Started server process [21071]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
+
+  IoTShield Verify API
+  ────────────────────────────────────────────
+  API   http://127.0.0.1:8000
+  Docs  http://127.0.0.1:8000/docs
+  ────────────────────────────────────────────
+  Demonstration service — all data is synthetic.
+
+INFO:     127.0.0.1:33784 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:33786 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:33802 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40886 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40896 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40900 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42550 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42558 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:46010 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:46016 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:46028 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37874 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37878 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37894 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48660 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48664 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48670 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:46610 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:46620 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:36398 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:36414 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:36416 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:33546 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:33554 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:33560 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50846 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50854 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50870 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:35118 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:35120 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53586 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53586 - "GET /summary HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53568 - "GET /devices HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53572 - "GET /alerts HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59368 - "GET /analytics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57974 - "GET /events?limit=500 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57974 - "GET /malware HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57988 - "GET /verification HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57988 - "GET /resilience HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56720 - "OPTIONS /simulation/start HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56726 - "POST /simulation/start HTTP/1.1" 200 OK
+INFO:     127.0.0.1:44464 - "GET /verification HTTP/1.1" 200 OK
+INFO:     127.0.0.1:44464 - "GET /resilience HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43268 - "GET /summary HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43268 - "GET /summary HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43268 - "GET /summary HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43268 - "GET /summary HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49276 - "GET /summary HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49276 - "GET /analytics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49292 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49292 - "GET /favicon.ico HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:44372 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:44346 - "GET /devices HTTP/1.1" 200 OK
+INFO:     127.0.0.1:44358 - "GET /alerts HTTP/1.1" 200 OK
+INFO:     127.0.0.1:44346 - "GET /summary HTTP/1.1" 200 OK
+INFO:     127.0.0.1:44346 - "GET /analytics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:44346 - "GET /events?limit=500 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:44346 - "GET /events?limit=500 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:44346 - "GET /malware HTTP/1.1" 200 OK
+INFO:     127.0.0.1:44346 - "GET /verification HTTP/1.1" 200 OK
+INFO:     127.0.0.1:44346 - "GET /resilience HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56160 - "OPTIONS /simulation/start HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56174 - "POST /simulation/start HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41976 - "GET /verification HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41976 - "GET /resilience HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41238 - "GET /summary HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41238 - "GET /summary HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41238 - "GET /summary HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41238 - "GET /summary HTTP/1.1" 200 OK
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [21071]

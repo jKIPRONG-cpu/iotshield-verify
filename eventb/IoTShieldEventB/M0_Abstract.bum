@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<org.eventb.core.machineFile org.eventb.core.configuration="org.eventb.core.fwd" org.eventb.core.comment="Abstract lifecycle: a device is ok, compromised or contained." version="5">
+<org.eventb.core.seesContext name="_1" org.eventb.core.target="C0_Abstract"/>
+<org.eventb.core.variable name="_2" org.eventb.core.identifier="status"/>
+<org.eventb.core.invariant name="_3" org.eventb.core.label="inv1" org.eventb.core.predicate="status ∈ DEV → STATUS" org.eventb.core.theorem="false"/>
+<org.eventb.core.invariant name="_4" org.eventb.core.label="inv2_vp07" org.eventb.core.predicate="∀c·c ∈ CRITICAL ⇒ status(c) = ok" org.eventb.core.theorem="false"/>
+<org.eventb.core.event name="_5" org.eventb.core.convergence="0" org.eventb.core.extended="false" org.eventb.core.label="INITIALISATION">
+  <org.eventb.core.action name="_1" org.eventb.core.assignment="status ≔ DEV × {ok}" org.eventb.core.label="act1"/>
+</org.eventb.core.event>
+<org.eventb.core.event name="_6" org.eventb.core.convergence="0" org.eventb.core.extended="false" org.eventb.core.label="compromise_external" org.eventb.core.comment="An externally exposed device is compromised directly.">
+  <org.eventb.core.parameter name="_1" org.eventb.core.identifier="d"/>
+  <org.eventb.core.guard name="_2" org.eventb.core.label="grd1" org.eventb.core.predicate="d ∈ EXPOSED"/>
+  <org.eventb.core.guard name="_3" org.eventb.core.label="grd2" org.eventb.core.predicate="status(d) = ok"/>
+  <org.eventb.core.action name="_4" org.eventb.core.assignment="status(d) ≔ compromised" org.eventb.core.label="act1"/>
+</org.eventb.core.event>
+<org.eventb.core.event name="_7" org.eventb.core.convergence="0" org.eventb.core.extended="false" org.eventb.core.label="compromise_lateral" org.eventb.core.comment="Only a compromised, uncontained device can spread; critical assets cannot be reached.">
+  <org.eventb.core.parameter name="_1" org.eventb.core.identifier="s"/>
+  <org.eventb.core.parameter name="_2" org.eventb.core.identifier="d"/>
+  <org.eventb.core.guard name="_3" org.eventb.core.label="grd1" org.eventb.core.predicate="s ∈ DEV"/>
+  <org.eventb.core.guard name="_4" org.eventb.core.label="grd2" org.eventb.core.predicate="d ∈ DEV"/>
+  <org.eventb.core.guard name="_5" org.eventb.core.label="grd3" org.eventb.core.predicate="s ≠ d"/>
+  <org.eventb.core.guard name="_6" org.eventb.core.label="grd4" org.eventb.core.predicate="status(s) = compromised"/>
+  <org.eventb.core.guard name="_7" org.eventb.core.label="grd5" org.eventb.core.predicate="status(d) = ok"/>
+  <org.eventb.core.guard name="_8" org.eventb.core.label="grd6" org.eventb.core.predicate="d ∉ CRITICAL"/>
+  <org.eventb.core.action name="_9" org.eventb.core.assignment="status(d) ≔ compromised" org.eventb.core.label="act1"/>
+</org.eventb.core.event>
+<org.eventb.core.event name="_8" org.eventb.core.convergence="0" org.eventb.core.extended="false" org.eventb.core.label="contain">
+  <org.eventb.core.parameter name="_1" org.eventb.core.identifier="d"/>
+  <org.eventb.core.guard name="_2" org.eventb.core.label="grd1" org.eventb.core.predicate="d ∈ DEV"/>
+  <org.eventb.core.guard name="_3" org.eventb.core.label="grd2" org.eventb.core.predicate="status(d) = compromised"/>
+  <org.eventb.core.action name="_4" org.eventb.core.assignment="status(d) ≔ contained" org.eventb.core.label="act1"/>
+</org.eventb.core.event>
+<org.eventb.core.event name="_9" org.eventb.core.convergence="0" org.eventb.core.extended="false" org.eventb.core.label="release">
+  <org.eventb.core.parameter name="_1" org.eventb.core.identifier="d"/>
+  <org.eventb.core.guard name="_2" org.eventb.core.label="grd1" org.eventb.core.predicate="d ∈ DEV"/>
+  <org.eventb.core.guard name="_3" org.eventb.core.label="grd2" org.eventb.core.predicate="status(d) = contained"/>
+  <org.eventb.core.action name="_4" org.eventb.core.assignment="status(d) ≔ ok" org.eventb.core.label="act1"/>
+</org.eventb.core.event>
+</org.eventb.core.machineFile>

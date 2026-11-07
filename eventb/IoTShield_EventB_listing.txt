@@ -1,0 +1,568 @@
+CONTEXT C0_Abstract
+SETS
+  DEV  STATUS
+CONSTANTS
+  ok  compromised  contained  EXPOSED  CRITICAL
+AXIOMS
+  @axm1 partition(STATUS,{ok},{compromised},{contained})
+  @axm2 finite(DEV)
+  @axm3 DEV ≠ ∅
+  @axm4 EXPOSED ⊆ DEV
+  @axm5 CRITICAL ⊆ DEV
+  @axm6 EXPOSED ∩ CRITICAL = ∅
+END
+
+CONTEXT C1_Lifecycle
+EXTENDS C0_Abstract
+SETS
+  PLACE  TRUST  THREAT  CLASS  ZONE
+CONSTANTS
+  idle  packet  auth  normal  suspicious  malware  exfil  detect  verify  isolate  recover  unknown  authenticated  quarantined  none  suspected  confirmed  OKP  CP  CTP  cls  zone  hard  strength  adj  MAXATT  STH  VTH  VMAX
+AXIOMS
+  @axm1 partition(PLACE,{idle},{packet},{auth},{normal},{suspicious},{malware},{exfil},{detect},{verify},{isolate},{recover})
+  @axm2 partition(TRUST,{unknown},{authenticated},{quarantined})
+  @axm3 partition(THREAT,{none},{suspected},{confirmed})
+  @axm4 OKP = {idle,packet,auth,normal}
+  @axm5 CP = {suspicious,malware,exfil,detect,verify}
+  @axm6 CTP = {isolate,recover}
+  @axm7 cls ∈ DEV → CLASS
+  @axm8 zone ∈ DEV → ZONE
+  @axm9 hard ∈ DEV → 0‥2
+  @axm10 strength ∈ CLASS × CLASS → 0‥2
+  @axm11 adj ⊆ ZONE × ZONE
+  @axm12 ∀c,s·c ∈ CRITICAL ∧ s ∈ DEV ⇒ strength(cls(c) ↦ cls(s)) ≤ hard(c)
+  @axm13 MAXATT = 3
+  @axm14 STH = 2
+  @axm15 VTH = 2
+  @axm16 VMAX = 2
+END
+
+CONTEXT C2_Instance
+EXTENDS C1_Lifecycle
+CONSTANTS
+  GW1  TH1  PLC1  gateway  thermostat  plc  building  plant
+AXIOMS
+  @axm1 partition(DEV,{GW1},{TH1},{PLC1})
+  @axm2 partition(CLASS,{gateway},{thermostat},{plc})
+  @axm3 partition(ZONE,{building},{plant})
+  @axm4 EXPOSED = {GW1}
+  @axm5 CRITICAL = {PLC1}
+  @axm6 cls = {GW1 ↦ gateway, TH1 ↦ thermostat, PLC1 ↦ plc}
+  @axm7 zone = {GW1 ↦ building, TH1 ↦ building, PLC1 ↦ plant}
+  @axm8 hard = {GW1 ↦ 0, TH1 ↦ 1, PLC1 ↦ 2}
+  @axm9 adj = ZONE × ZONE
+  @axm10 strength = {(gateway ↦ gateway) ↦ 2, (gateway ↦ thermostat) ↦ 0, (gateway ↦ plc) ↦ 1, (thermostat ↦ gateway) ↦ 2, (thermostat ↦ thermostat) ↦ 1, (thermostat ↦ plc) ↦ 0, (plc ↦ gateway) ↦ 1, (plc ↦ thermostat) ↦ 0, (plc ↦ plc) ↦ 1}
+END
+
+MACHINE M0_Abstract
+SEES C0_Abstract
+VARIABLES
+  status
+INVARIANTS
+  @inv1 status ∈ DEV → STATUS
+  @inv2_vp07 ∀c·c ∈ CRITICAL ⇒ status(c) = ok
+EVENTS
+  INITIALISATION
+    then
+      @act1 status ≔ DEV × {ok}
+    end
+  compromise_external   // An externally exposed device is compromised directly.
+    any d
+    where
+      @grd1 d ∈ EXPOSED
+      @grd2 status(d) = ok
+    then
+      @act1 status(d) ≔ compromised
+    end
+  compromise_lateral   // Only a compromised, uncontained device can spread; critical assets cannot be reached.
+    any s d
+    where
+      @grd1 s ∈ DEV
+      @grd2 d ∈ DEV
+      @grd3 s ≠ d
+      @grd4 status(s) = compromised
+      @grd5 status(d) = ok
+      @grd6 d ∉ CRITICAL
+    then
+      @act1 status(d) ≔ compromised
+    end
+  contain
+    any d
+    where
+      @grd1 d ∈ DEV
+      @grd2 status(d) = compromised
+    then
+      @act1 status(d) ≔ contained
+    end
+  release
+    any d
+    where
+      @grd1 d ∈ DEV
+      @grd2 status(d) = contained
+    then
+      @act1 status(d) ≔ ok
+    end
+END
+
+MACHINE M1_Baseline
+REFINES M0_Abstract
+SEES C1_Lifecycle
+VARIABLES
+  place  trust  threat  att  obs  vol  detected
+INVARIANTS
+  @typ1 place ∈ DEV → PLACE
+  @typ2 trust ∈ DEV → TRUST
+  @typ3 threat ∈ DEV → THREAT
+  @typ4 att ∈ DEV → 0‥MAXATT
+  @typ5 obs ∈ DEV → 0‥STH
+  @typ6 vol ∈ DEV → 0‥VMAX
+  @typ7 detected ⊆ DEV
+  @glue1 ∀x·x ∈ DEV ⇒ (status(x) = ok ⇔ place(x) ∈ OKP)
+  @glue2 ∀x·x ∈ DEV ⇒ (status(x) = compromised ⇔ place(x) ∈ CP)
+  @glue3 ∀x·x ∈ DEV ⇒ (status(x) = contained ⇔ place(x) ∈ CTP)
+  @inv1 ∀x·x ∈ DEV ⇒ (trust(x) = unknown ⇔ place(x) ∈ {idle,packet})
+  @inv2 ∀x·x ∈ DEV ⇒ (trust(x) = quarantined ⇔ place(x) ∈ {isolate,recover})
+  @inv3 ∀x·x ∈ DEV ⇒ (threat(x) = none ⇔ place(x) ∈ OKP)
+  @inv4 ∀x·x ∈ DEV ∧ threat(x) = suspected ⇒ place(x) = suspicious
+  @inv5 ∀x·x ∈ DEV ∧ place(x) ∈ {malware,exfil,detect,verify,isolate,recover} ⇒ threat(x) = confirmed
+  @inv6 ∀x·x ∈ DEV ∧ place(x) ∈ {suspicious,malware,exfil} ⇒ obs(x) ≥ 1
+  @inv7 ∀x·x ∈ DEV ⇒ (x ∈ detected ⇔ place(x) ∈ {detect,verify,isolate,recover})
+  theorem @vp01 ∀x·x ∈ DEV ∧ place(x) = malware ⇒ trust(x) ≠ unknown
+  theorem @vp04 ∀x·x ∈ DEV ∧ trust(x) = quarantined ⇒ place(x) ∉ {malware,exfil}
+  @vp06 ∀x·x ∈ DEV ∧ place(x) = exfil ⇒ x ∈ detected
+  theorem @vp07 ∀c·c ∈ CRITICAL ⇒ threat(c) = none
+  theorem @dlf ∀x·x ∈ DEV ⇒ (place(x) ∈ {idle,auth,suspicious,exfil,detect,verify,isolate,recover,normal} ∨ (place(x) = packet ∧ trust(x) ≠ quarantined) ∨ (place(x) = malware ∧ (⊤)))
+EVENTS
+  INITIALISATION
+    then
+      @act1 place ≔ DEV × {idle}
+      @act2 trust ≔ DEV × {unknown}
+      @act3 threat ≔ DEV × {none}
+      @act4 att ≔ DEV × {0}
+      @act5 obs ≔ DEV × {0}
+      @act6 vol ≔ DEV × {0}
+      @act7 detected ≔ ∅
+    end
+  Receive   // CPN t-receive
+    any d
+    where
+      @grd1 d ∈ DEV
+      @grd2 place(d) = idle
+    then
+      @act1 place(d) ≔ packet
+    end
+  Authenticate   // CPN t-auth
+    any d
+    where
+      @grd1 d ∈ DEV
+      @grd2 place(d) = packet
+      @grd3 trust(d) ≠ quarantined
+    then
+      @act1 place(d) ≔ auth
+      @act2 trust(d) ≔ authenticated
+    end
+  AnalyseNormal   // CPN t-analyse, benign outcome
+    any d
+    where
+      @grd1 d ∈ DEV
+      @grd2 place(d) = auth
+    then
+      @act1 place(d) ≔ normal
+    end
+  AnalyseSuspicious refines compromise_external   // CPN t-analyse, suspicious outcome (exposed devices only)
+    any d
+    where
+      @grd1 d ∈ EXPOSED
+      @grd2 place(d) = auth
+    then
+      @act1 place(d) ≔ suspicious
+      @act2 threat(d) ≔ suspected
+      @act3 obs(d) ≔ min({obs(d) + 1, STH})
+      @act4 vol(d) ≔ min({vol(d) + 1, VMAX})
+    end
+  ReObserve   // CPN t-reobserve
+    any d
+    where
+      @grd1 d ∈ DEV
+      @grd2 place(d) = suspicious
+    then
+      @act1 obs(d) ≔ min({obs(d) + 1, STH})
+      @act2 att(d) ≔ min({att(d) + 1, MAXATT})
+    end
+  ExecutePayload   // CPN t-execute
+    any d
+    where
+      @grd1 d ∈ DEV
+      @grd2 place(d) = suspicious
+    then
+      @act1 place(d) ≔ malware
+      @act2 threat(d) ≔ confirmed
+    end
+  DeferContainment   // CPN t-defer (the containment defect)
+    any d
+    where
+      @grd1 d ∈ DEV
+      @grd2 place(d) = malware
+    then
+      @act1 place(d) ≔ suspicious
+      @act2 att(d) ≔ min({att(d) + 1, MAXATT})
+    end
+  Exfiltrate   // CPN t-exfil
+    any d
+    where
+      @grd1 d ∈ DEV
+      @grd2 place(d) = malware
+      @grd3 trust(d) ≠ quarantined
+    then
+      @act1 place(d) ≔ exfil
+      @act2 vol(d) ≔ min({vol(d) + 1, VMAX})
+    end
+  ResumeExecution   // CPN t-resume
+    any d
+    where
+      @grd1 d ∈ DEV
+      @grd2 place(d) = exfil
+    then
+      @act1 place(d) ≔ malware
+    end
+  DetectMalware   // CPN t-detect
+    any d
+    where
+      @grd1 d ∈ DEV
+      @grd2 place(d) ∈ {suspicious,malware,exfil}
+      @grd3 obs(d) ≥ STH
+    then
+      @act1 place(d) ≔ detect
+      @act2 threat(d) ≔ confirmed
+      @act3 detected ≔ detected ∪ {d}
+    end
+  VerifyProperties   // CPN t-verify
+    any d
+    where
+      @grd1 d ∈ DEV
+      @grd2 place(d) = detect
+    then
+      @act1 place(d) ≔ verify
+    end
+  IsolateDevice refines contain   // CPN t-isolate
+    any d
+    where
+      @grd1 d ∈ DEV
+      @grd2 place(d) = verify
+    then
+      @act1 place(d) ≔ isolate
+      @act2 trust(d) ≔ quarantined
+    end
+  RecoverDevice   // CPN t-recover
+    any d
+    where
+      @grd1 d ∈ DEV
+      @grd2 place(d) = isolate
+    then
+      @act1 place(d) ≔ recover
+    end
+  RestoreNormal   // CPN t-restore from Normal Behaviour
+    any d
+    where
+      @grd1 d ∈ DEV
+      @grd2 place(d) = normal
+    then
+      @act1 place(d) ≔ idle
+      @act2 trust(d) ≔ unknown
+      @act3 threat(d) ≔ none
+      @act4 att(d) ≔ 0
+      @act5 obs(d) ≔ 0
+      @act6 vol(d) ≔ 0
+      @act7 detected ≔ detected ∖ {d}
+    end
+  RestoreRecovered refines release   // CPN t-restore from Recovery
+    any d
+    where
+      @grd1 d ∈ DEV
+      @grd2 place(d) = recover
+    then
+      @act1 place(d) ≔ idle
+      @act2 trust(d) ≔ unknown
+      @act3 threat(d) ≔ none
+      @act4 att(d) ≔ 0
+      @act5 obs(d) ≔ 0
+      @act6 vol(d) ≔ 0
+      @act7 detected ≔ detected ∖ {d}
+    end
+  LateralInfect refines compromise_lateral   // CPN t-infect: two-token binding over class, zone and hardening
+    any s d
+    where
+      @grd1 s ∈ DEV
+      @grd2 d ∈ DEV
+      @grd3 s ≠ d
+      @grd4 threat(s) = confirmed
+      @grd5 trust(s) ≠ quarantined
+      @grd6 threat(d) = none
+      @grd7 trust(d) = authenticated
+      @grd8 zone(s) ↦ zone(d) ∈ adj
+      @grd9 strength(cls(d) ↦ cls(s)) > hard(d)
+    then
+      @act1 place(d) ≔ suspicious
+      @act2 threat(d) ≔ suspected
+      @act3 obs(d) ≔ min({obs(d) + 1, STH})
+      @act4 vol(d) ≔ min({vol(d) + 1, VMAX})
+    end
+END
+
+MACHINE M1_Hardened
+REFINES M0_Abstract
+SEES C1_Lifecycle
+VARIABLES
+  place  trust  threat  att  obs  vol  detected
+INVARIANTS
+  @typ1 place ∈ DEV → PLACE
+  @typ2 trust ∈ DEV → TRUST
+  @typ3 threat ∈ DEV → THREAT
+  @typ4 att ∈ DEV → 0‥MAXATT
+  @typ5 obs ∈ DEV → 0‥STH
+  @typ6 vol ∈ DEV → 0‥VMAX
+  @typ7 detected ⊆ DEV
+  @glue1 ∀x·x ∈ DEV ⇒ (status(x) = ok ⇔ place(x) ∈ OKP)
+  @glue2 ∀x·x ∈ DEV ⇒ (status(x) = compromised ⇔ place(x) ∈ CP)
+  @glue3 ∀x·x ∈ DEV ⇒ (status(x) = contained ⇔ place(x) ∈ CTP)
+  @inv1 ∀x·x ∈ DEV ⇒ (trust(x) = unknown ⇔ place(x) ∈ {idle,packet})
+  @inv2 ∀x·x ∈ DEV ⇒ (trust(x) = quarantined ⇔ place(x) ∈ {isolate,recover})
+  @inv3 ∀x·x ∈ DEV ⇒ (threat(x) = none ⇔ place(x) ∈ OKP)
+  @inv4 ∀x·x ∈ DEV ∧ threat(x) = suspected ⇒ place(x) = suspicious
+  @inv5 ∀x·x ∈ DEV ∧ place(x) ∈ {malware,exfil,detect,verify,isolate,recover} ⇒ threat(x) = confirmed
+  @inv6 ∀x·x ∈ DEV ∧ place(x) ∈ {suspicious,malware,exfil} ⇒ obs(x) ≥ 1
+  @inv7 ∀x·x ∈ DEV ⇒ (x ∈ detected ⇔ place(x) ∈ {detect,verify,isolate,recover})
+  theorem @vp01 ∀x·x ∈ DEV ∧ place(x) = malware ⇒ trust(x) ≠ unknown
+  theorem @vp04 ∀x·x ∈ DEV ∧ trust(x) = quarantined ⇒ place(x) ∉ {malware,exfil}
+  @vp06 ∀x·x ∈ DEV ∧ place(x) = exfil ⇒ x ∈ detected
+  theorem @vp07 ∀c·c ∈ CRITICAL ⇒ threat(c) = none
+  theorem @dlf ∀x·x ∈ DEV ⇒ (place(x) ∈ {idle,auth,suspicious,exfil,detect,verify,isolate,recover,normal} ∨ (place(x) = packet ∧ trust(x) ≠ quarantined) ∨ (place(x) = malware ∧ (att(x) < MAXATT ∨ obs(x) ≥ STH ∨ att(x) ≥ MAXATT ∨ vol(x) ≥ VTH)))
+EVENTS
+  INITIALISATION
+    then
+      @act1 place ≔ DEV × {idle}
+      @act2 trust ≔ DEV × {unknown}
+      @act3 threat ≔ DEV × {none}
+      @act4 att ≔ DEV × {0}
+      @act5 obs ≔ DEV × {0}
+      @act6 vol ≔ DEV × {0}
+      @act7 detected ≔ ∅
+    end
+  Receive   // CPN t-receive
+    any d
+    where
+      @grd1 d ∈ DEV
+      @grd2 place(d) = idle
+    then
+      @act1 place(d) ≔ packet
+    end
+  Authenticate   // CPN t-auth
+    any d
+    where
+      @grd1 d ∈ DEV
+      @grd2 place(d) = packet
+      @grd3 trust(d) ≠ quarantined
+    then
+      @act1 place(d) ≔ auth
+      @act2 trust(d) ≔ authenticated
+    end
+  AnalyseNormal   // CPN t-analyse, benign outcome
+    any d
+    where
+      @grd1 d ∈ DEV
+      @grd2 place(d) = auth
+    then
+      @act1 place(d) ≔ normal
+    end
+  AnalyseSuspicious refines compromise_external   // CPN t-analyse, suspicious outcome (exposed devices only)
+    any d
+    where
+      @grd1 d ∈ EXPOSED
+      @grd2 place(d) = auth
+    then
+      @act1 place(d) ≔ suspicious
+      @act2 threat(d) ≔ suspected
+      @act3 obs(d) ≔ min({obs(d) + 1, STH})
+      @act4 vol(d) ≔ min({vol(d) + 1, VMAX})
+    end
+  ReObserve   // CPN t-reobserve
+    any d
+    where
+      @grd1 d ∈ DEV
+      @grd2 place(d) = suspicious
+      @grd3 att(d) < MAXATT
+    then
+      @act1 obs(d) ≔ min({obs(d) + 1, STH})
+      @act2 att(d) ≔ att(d) + 1
+    end
+  ExecutePayload   // CPN t-execute
+    any d
+    where
+      @grd1 d ∈ DEV
+      @grd2 place(d) = suspicious
+    then
+      @act1 place(d) ≔ malware
+      @act2 threat(d) ≔ confirmed
+    end
+  DeferContainment   // CPN t-defer (the containment defect)
+    any d
+    where
+      @grd1 d ∈ DEV
+      @grd2 place(d) = malware
+      @grd3 att(d) < MAXATT
+    then
+      @act1 place(d) ≔ suspicious
+      @act2 att(d) ≔ att(d) + 1
+    end
+  Exfiltrate   // CPN t-exfil
+    any d
+    where
+      @grd1 d ∈ DEV
+      @grd2 place(d) = malware
+      @grd3 trust(d) ≠ quarantined
+      @grd4 d ∈ detected ∨ obs(d) = 0
+    then
+      @act1 place(d) ≔ exfil
+      @act2 vol(d) ≔ min({vol(d) + 1, VMAX})
+    end
+  ResumeExecution   // CPN t-resume
+    any d
+    where
+      @grd1 d ∈ DEV
+      @grd2 place(d) = exfil
+    then
+      @act1 place(d) ≔ malware
+    end
+  DetectMalware   // CPN t-detect
+    any d
+    where
+      @grd1 d ∈ DEV
+      @grd2 place(d) ∈ {suspicious,malware,exfil}
+      @grd3 obs(d) ≥ STH ∨ att(d) ≥ MAXATT ∨ vol(d) ≥ VTH
+    then
+      @act1 place(d) ≔ detect
+      @act2 threat(d) ≔ confirmed
+      @act3 detected ≔ detected ∪ {d}
+    end
+  VerifyProperties   // CPN t-verify
+    any d
+    where
+      @grd1 d ∈ DEV
+      @grd2 place(d) = detect
+    then
+      @act1 place(d) ≔ verify
+    end
+  IsolateDevice refines contain   // CPN t-isolate
+    any d
+    where
+      @grd1 d ∈ DEV
+      @grd2 place(d) = verify
+    then
+      @act1 place(d) ≔ isolate
+      @act2 trust(d) ≔ quarantined
+    end
+  RecoverDevice   // CPN t-recover
+    any d
+    where
+      @grd1 d ∈ DEV
+      @grd2 place(d) = isolate
+    then
+      @act1 place(d) ≔ recover
+    end
+  RestoreNormal   // CPN t-restore from Normal Behaviour
+    any d
+    where
+      @grd1 d ∈ DEV
+      @grd2 place(d) = normal
+    then
+      @act1 place(d) ≔ idle
+      @act2 trust(d) ≔ unknown
+      @act3 threat(d) ≔ none
+      @act4 att(d) ≔ 0
+      @act5 obs(d) ≔ 0
+      @act6 vol(d) ≔ 0
+      @act7 detected ≔ detected ∖ {d}
+    end
+  RestoreRecovered refines release   // CPN t-restore from Recovery
+    any d
+    where
+      @grd1 d ∈ DEV
+      @grd2 place(d) = recover
+    then
+      @act1 place(d) ≔ idle
+      @act2 trust(d) ≔ unknown
+      @act3 threat(d) ≔ none
+      @act4 att(d) ≔ 0
+      @act5 obs(d) ≔ 0
+      @act6 vol(d) ≔ 0
+      @act7 detected ≔ detected ∖ {d}
+    end
+  LateralInfect refines compromise_lateral   // CPN t-infect: two-token binding over class, zone and hardening
+    any s d
+    where
+      @grd1 s ∈ DEV
+      @grd2 d ∈ DEV
+      @grd3 s ≠ d
+      @grd4 threat(s) = confirmed
+      @grd5 trust(s) ≠ quarantined
+      @grd6 threat(d) = none
+      @grd7 trust(d) = authenticated
+      @grd8 zone(s) ↦ zone(d) ∈ adj
+      @grd9 strength(cls(d) ↦ cls(s)) > hard(d)
+    then
+      @act1 place(d) ≔ suspicious
+      @act2 threat(d) ≔ suspected
+      @act3 obs(d) ≔ min({obs(d) + 1, STH})
+      @act4 vol(d) ≔ min({vol(d) + 1, VMAX})
+    end
+END
+
+MACHINE M2_BaselineInstance
+REFINES M1_Baseline
+SEES C2_Instance
+VARIABLES
+  place  trust  threat  att  obs  vol  detected
+EVENTS
+  INITIALISATION extends INITIALISATION
+  Receive extends Receive
+  Authenticate extends Authenticate
+  AnalyseNormal extends AnalyseNormal
+  AnalyseSuspicious extends AnalyseSuspicious
+  ReObserve extends ReObserve
+  ExecutePayload extends ExecutePayload
+  DeferContainment extends DeferContainment
+  Exfiltrate extends Exfiltrate
+  ResumeExecution extends ResumeExecution
+  DetectMalware extends DetectMalware
+  VerifyProperties extends VerifyProperties
+  IsolateDevice extends IsolateDevice
+  RecoverDevice extends RecoverDevice
+  RestoreNormal extends RestoreNormal
+  RestoreRecovered extends RestoreRecovered
+  LateralInfect extends LateralInfect
+END
+
+MACHINE M2_HardenedInstance
+REFINES M1_Hardened
+SEES C2_Instance
+VARIABLES
+  place  trust  threat  att  obs  vol  detected
+EVENTS
+  INITIALISATION extends INITIALISATION
+  Receive extends Receive
+  Authenticate extends Authenticate
+  AnalyseNormal extends AnalyseNormal
+  AnalyseSuspicious extends AnalyseSuspicious
+  ReObserve extends ReObserve
+  ExecutePayload extends ExecutePayload
+  DeferContainment extends DeferContainment
+  Exfiltrate extends Exfiltrate
+  ResumeExecution extends ResumeExecution
+  DetectMalware extends DetectMalware
+  VerifyProperties extends VerifyProperties
+  IsolateDevice extends IsolateDevice
+  RecoverDevice extends RecoverDevice
+  RestoreNormal extends RestoreNormal
+  RestoreRecovered extends RestoreRecovered
+  LateralInfect extends LateralInfect
+END

@@ -353,8 +353,10 @@ export function successors(marking: Marking, config: NetConfig): Successor[] {
        has ruled.
        Hardened: EGRESS HOLD PENDING INSPECTION. A device carrying an open
        suspicion indicator cannot transfer until detection has ruled on it.
-       The transition is retained, not deleted — it remains reachable once
-       detection has fired, and legitimate transfers (obs = 0) are untouched. */
+       The transition is retained, not deleted. NOTE: in this net it is dead
+       in the hardened variant — a device in Malware Execution always has
+       obs >= 1, and t-detect moves the token out of Malware Execution, so the
+       hold is never satisfied there (confirmed by tools/crosscheck_model.py). */
     const egressPermitted = !hardened || d.detFired || d.obs === 0
     if (d.place === 'malware' && d.trust !== 'quarantined' && egressPermitted) {
       emit(

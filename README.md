@@ -46,17 +46,29 @@ from live application state, so what it says matches what is on screen.
 
 ### The finding the demo is built around
 
-Four of the six formal properties hold. Two do not — **Malware Containment** and
-**Data Leakage Prevention** — and those failures are the point, not a bug.
+The formal model is checked against eight properties, in two variants of the
+same net (full evidence in [`VERIFICATION_EVIDENCE.md`](VERIFICATION_EVIDENCE.md)):
 
-In every simulated run the *response works*: the threat is caught and the device
-quarantined. What model checking establishes is subtler: because `Analyse
-Behaviour` and `Detect Malware` are concurrently enabled on the same token, a
-scheduler may keep choosing the analysis branch, so containment is **reachable
-but not inevitable**. No amount of testing surfaces that — it is a property of
-the state space, not of any single execution. Let the Petri net run and the
-"containment deferred" counter climbs; each increment is a live witness to the
-counterexample.
+| Model | Reachable states | Holds | Holds under weak fairness |
+|---|---|---|---|
+| Baseline | 15,876 | 6 of 8 | 6 of 8 |
+| Hardened | 5,184 | 7 of 8 | 8 of 8 |
+
+The two baseline failures — **VP-05 Malware Containment** and **VP-06 Data
+Leakage Prevention** — are the point, not a bug. In the baseline, a deferral arc
+returns a compromised device from Malware Execution to Suspicious Behaviour
+without recording a new observation, so a schedule that keeps deferring never
+enables the detector: containment is **reachable but not inevitable**. No amount
+of testing surfaces that — it is a property of the state space, not of any
+single execution. The hardened net bounds the retries; containment then holds
+under weak fairness. Exfiltration is held until detection has ruled, which in
+this model makes the exfiltration transition dead, so VP-06 holds because a
+compromised device can no longer transfer at all.
+
+The results have been reproduced three ways: by the TypeScript checker
+(`npm run verify:model`), by an independent Python re-implementation
+(`npm run verify:crosscheck`), and by an Event-B transcription of the same net
+(`eventb/`), which yields the identical state space.
 
 ---
 
@@ -123,7 +135,7 @@ checkout.
 npm install                 # root: installs the verification tooling
 
 # 1. Backend — every endpoint, status codes, payload shapes, PDF magic bytes
-npm run verify:backend      # 86 checks
+npm run verify:backend      # 88 checks
 
 # 2. Cross-language dataset parity (see below)
 npm run verify:parity
@@ -131,7 +143,7 @@ npm run verify:parity
 # 3. Frontend — all 12 routes in headless Chromium, simulation propagation,
 #    Petri-net controls, assistant, paint checks, responsive overflow
 cd frontend && npm run build && npm run preview &   # serves :4173
-npm run verify:frontend     # 56 checks
+npm run verify:frontend     # 81 checks
 ```
 
 The frontend check needs a headless Chromium:

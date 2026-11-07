@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<org.eventb.core.contextFile org.eventb.core.configuration="org.eventb.core.fwd" org.eventb.core.comment="Places, colours and the heterogeneous-interaction relation of the IoTShield net." version="3">
+<org.eventb.core.extendsContext name="_1" org.eventb.core.target="C0_Abstract"/>
+<org.eventb.core.carrierSet name="_2" org.eventb.core.identifier="PLACE"/>
+<org.eventb.core.carrierSet name="_3" org.eventb.core.identifier="TRUST"/>
+<org.eventb.core.carrierSet name="_4" org.eventb.core.identifier="THREAT"/>
+<org.eventb.core.carrierSet name="_5" org.eventb.core.identifier="CLASS"/>
+<org.eventb.core.carrierSet name="_6" org.eventb.core.identifier="ZONE"/>
+<org.eventb.core.constant name="_7" org.eventb.core.identifier="idle"/>
+<org.eventb.core.constant name="_8" org.eventb.core.identifier="packet"/>
+<org.eventb.core.constant name="_9" org.eventb.core.identifier="auth"/>
+<org.eventb.core.constant name="_10" org.eventb.core.identifier="normal"/>
+<org.eventb.core.constant name="_11" org.eventb.core.identifier="suspicious"/>
+<org.eventb.core.constant name="_12" org.eventb.core.identifier="malware"/>
+<org.eventb.core.constant name="_13" org.eventb.core.identifier="exfil"/>
+<org.eventb.core.constant name="_14" org.eventb.core.identifier="detect"/>
+<org.eventb.core.constant name="_15" org.eventb.core.identifier="verify"/>
+<org.eventb.core.constant name="_16" org.eventb.core.identifier="isolate"/>
+<org.eventb.core.constant name="_17" org.eventb.core.identifier="recover"/>
+<org.eventb.core.constant name="_18" org.eventb.core.identifier="unknown"/>
+<org.eventb.core.constant name="_19" org.eventb.core.identifier="authenticated"/>
+<org.eventb.core.constant name="_20" org.eventb.core.identifier="quarantined"/>
+<org.eventb.core.constant name="_21" org.eventb.core.identifier="none"/>
+<org.eventb.core.constant name="_22" org.eventb.core.identifier="suspected"/>
+<org.eventb.core.constant name="_23" org.eventb.core.identifier="confirmed"/>
+<org.eventb.core.constant name="_24" org.eventb.core.identifier="OKP"/>
+<org.eventb.core.constant name="_25" org.eventb.core.identifier="CP"/>
+<org.eventb.core.constant name="_26" org.eventb.core.identifier="CTP"/>
+<org.eventb.core.constant name="_27" org.eventb.core.identifier="cls"/>
+<org.eventb.core.constant name="_28" org.eventb.core.identifier="zone"/>
+<org.eventb.core.constant name="_29" org.eventb.core.identifier="hard"/>
+<org.eventb.core.constant name="_30" org.eventb.core.identifier="strength"/>
+<org.eventb.core.constant name="_31" org.eventb.core.identifier="adj"/>
+<org.eventb.core.constant name="_32" org.eventb.core.identifier="MAXATT"/>
+<org.eventb.core.constant name="_33" org.eventb.core.identifier="STH"/>
+<org.eventb.core.constant name="_34" org.eventb.core.identifier="VTH"/>
+<org.eventb.core.constant name="_35" org.eventb.core.identifier="VMAX"/>
+<org.eventb.core.axiom name="_36" org.eventb.core.label="axm1" org.eventb.core.predicate="partition(PLACE,{idle},{packet},{auth},{normal},{suspicious},{malware},{exfil},{detect},{verify},{isolate},{recover})" org.eventb.core.theorem="false"/>
+<org.eventb.core.axiom name="_37" org.eventb.core.label="axm2" org.eventb.core.predicate="partition(TRUST,{unknown},{authenticated},{quarantined})" org.eventb.core.theorem="false"/>
+<org.eventb.core.axiom name="_38" org.eventb.core.label="axm3" org.eventb.core.predicate="partition(THREAT,{none},{suspected},{confirmed})" org.eventb.core.theorem="false"/>
+<org.eventb.core.axiom name="_39" org.eventb.core.label="axm4" org.eventb.core.predicate="OKP = {idle,packet,auth,normal}" org.eventb.core.theorem="false"/>
+<org.eventb.core.axiom name="_40" org.eventb.core.label="axm5" org.eventb.core.predicate="CP = {suspicious,malware,exfil,detect,verify}" org.eventb.core.theorem="false"/>
+<org.eventb.core.axiom name="_41" org.eventb.core.label="axm6" org.eventb.core.predicate="CTP = {isolate,recover}" org.eventb.core.theorem="false"/>
+<org.eventb.core.axiom name="_42" org.eventb.core.label="axm7" org.eventb.core.predicate="cls ∈ DEV → CLASS" org.eventb.core.theorem="false"/>
+<org.eventb.core.axiom name="_43" org.eventb.core.label="axm8" org.eventb.core.predicate="zone ∈ DEV → ZONE" org.eventb.core.theorem="false"/>
+<org.eventb.core.axiom name="_44" org.eventb.core.label="axm9" org.eventb.core.predicate="hard ∈ DEV → 0‥2" org.eventb.core.theorem="false"/>
+<org.eventb.core.axiom name="_45" org.eventb.core.label="axm10" org.eventb.core.predicate="strength ∈ CLASS × CLASS → 0‥2" org.eventb.core.theorem="false"/>
+<org.eventb.core.axiom name="_46" org.eventb.core.label="axm11" org.eventb.core.predicate="adj ⊆ ZONE × ZONE" org.eventb.core.theorem="false"/>
+<org.eventb.core.axiom name="_47" org.eventb.core.label="axm12" org.eventb.core.predicate="∀c,s·c ∈ CRITICAL ∧ s ∈ DEV ⇒ strength(cls(c) ↦ cls(s)) ≤ hard(c)" org.eventb.core.theorem="false"/>
+<org.eventb.core.axiom name="_48" org.eventb.core.label="axm13" org.eventb.core.predicate="MAXATT = 3" org.eventb.core.theorem="false"/>
+<org.eventb.core.axiom name="_49" org.eventb.core.label="axm14" org.eventb.core.predicate="STH = 2" org.eventb.core.theorem="false"/>
+<org.eventb.core.axiom name="_50" org.eventb.core.label="axm15" org.eventb.core.predicate="VTH = 2" org.eventb.core.theorem="false"/>
+<org.eventb.core.axiom name="_51" org.eventb.core.label="axm16" org.eventb.core.predicate="VMAX = 2" org.eventb.core.theorem="false"/>
+</org.eventb.core.contextFile>
