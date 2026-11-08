@@ -1,0 +1,7 @@
+# Test-only dependencies for tools/verify_backend.py.
+#
+# Starlette's TestClient needs an HTTP client library. Starlette 1.7 declares
+# httpx2 (in its "full" extra) and still accepts httpx 0.27-0.28 as a fallback,
+# with a deprecation warning. httpx is used here; either works.
+-r requirements.txt
+httpx>=0.27,<0.29

@@ -1,0 +1,122 @@
+$ npm run verify:backend   (backend/.venv from requirements-dev.txt)
+2026-11-08T18:20:45+03:00
+fastapi==0.141.1
+httpx==0.28.1
+pydantic==2.13.4
+reportlab==4.5.1
+starlette==1.3.1
+uvicorn==0.52.1
+
+> iotshield-verify@1.0.0 verify:backend
+> python3 tools/verify_backend.py
+
+/home/sylvia/projects/iotshield-verify/backend/.venv/lib/python3.10/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+  from starlette.testclient import TestClient as TestClient  # noqa
+
+[1mSystem[0m
+  [32mPASS[0m  GET /health returns 200
+  [32mPASS[0m  GET /health reports ok
+  [32mPASS[0m  GET / returns 200
+  [32mPASS[0m  GET /docs serves OpenAPI UI
+
+[1mDashboard[0m
+  [32mPASS[0m  GET /summary returns 200
+  [32mPASS[0m  summary carries 14-point threat trend
+  [32mPASS[0m  summary carries device health breakdown
+  [32mPASS[0m  summary security score is within 0-100
+  [32mPASS[0m  GET /analytics returns 200
+  [32mPASS[0m  analytics covers all ten device classes
+
+[1mAssets[0m
+  [32mPASS[0m  GET /devices returns 200
+  [32mPASS[0m  GET /devices returns 40 devices
+  [32mPASS[0m  device records carry every required field
+  [32mPASS[0m  GET /devices?status= filters
+  [32mPASS[0m  status filter returns only compromised devices
+  [32mPASS[0m  GET /devices?q= searches
+  [32mPASS[0m  GET /devices/{id} returns 200
+  [32mPASS[0m  GET /devices/{id} returns the right device
+  [32mPASS[0m  GET /devices/{unknown} returns 404
+
+[1mTelemetry & detections[0m
+  [32mPASS[0m  GET /events returns 200
+  [32mPASS[0m  GET /events returns 500 events
+  [32mPASS[0m  events are ordered newest first
+  [32mPASS[0m  GET /events?limit= caps the result
+  [32mPASS[0m  GET /alerts returns 200
+  [32mPASS[0m  GET /alerts returns 150 alerts
+  [32mPASS[0m  GET /alerts?severity= filters
+  [32mPASS[0m  GET /alerts?sort=severity returns 200
+  [32mPASS[0m  severity sort is descending
+  [32mPASS[0m  GET /alerts?q= searches
+  [32mPASS[0m  GET /malware returns 200
+  [32mPASS[0m  GET /malware returns 10 families
+  [32mPASS[0m  malware records carry IOCs and mitigations
+
+[1mFormal methods & resilience[0m
+  [32mPASS[0m  GET /verification returns 200
+  [32mPASS[0m  verification returns 8 properties
+  [32mPASS[0m  property ids match the checker's output
+  [32mPASS[0m  every verdict matches the computed result
+  [32mPASS[0m  state counts match the reachability graph
+  [32mPASS[0m  failed properties carry a counterexample
+  [32mPASS[0m  GET /resilience returns 200
+  [32mPASS[0m  resilience carries a recovery workflow
+  [32mPASS[0m  resilience carries a stability timeline
+  [32mPASS[0m  GET /scenarios returns 200
+  [32mPASS[0m  GET /scenarios returns 5 scenarios
+
+[1mSimulation[0m
+  [32mPASS[0m  POST /simulation/start (normal) returns 200
+  [32mPASS[0m    normal: steps are ordered
+  [32mPASS[0m    normal: returns 8 verification verdicts
+  [32mPASS[0m    normal: violated count matches the verdicts
+  [32mPASS[0m    normal: one alert per affected device
+  [32mPASS[0m  POST /simulation/start (mirai) returns 200
+  [32mPASS[0m    mirai: steps are ordered
+  [32mPASS[0m    mirai: returns 8 verification verdicts
+  [32mPASS[0m    mirai: violated count matches the verdicts
+  [32mPASS[0m    mirai: one alert per affected device
+  [32mPASS[0m  POST /simulation/start (botnet) returns 200
+  [32mPASS[0m    botnet: steps are ordered
+  [32mPASS[0m    botnet: returns 8 verification verdicts
+  [32mPASS[0m    botnet: violated count matches the verdicts
+  [32mPASS[0m    botnet: one alert per affected device
+  [32mPASS[0m  POST /simulation/start (credential) returns 200
+  [32mPASS[0m    credential: steps are ordered
+  [32mPASS[0m    credential: returns 8 verification verdicts
+  [32mPASS[0m    credential: violated count matches the verdicts
+  [32mPASS[0m    credential: one alert per affected device
+  [32mPASS[0m  POST /simulation/start (ransomware) returns 200
+  [32mPASS[0m    ransomware: steps are ordered
+  [32mPASS[0m    ransomware: returns 8 verification verdicts
+  [32mPASS[0m    ransomware: violated count matches the verdicts
+  [32mPASS[0m    ransomware: one alert per affected device
+  [32mPASS[0m  simulation state propagates to /verification
+  [32mPASS[0m  simulation alerts are prepended to /alerts
+  [32mPASS[0m  POST /simulation/start rejects an unknown scenario
+  [32mPASS[0m  POST /simulation/reset returns 200
+  [32mPASS[0m  reset reports ok
+  [32mPASS[0m  reset restores the baseline verdicts
+  [32mPASS[0m  reset removes injected alerts
+
+[1mReports[0m
+  [32mPASS[0m  GET /reports returns 200
+  [32mPASS[0m  report carries an executive summary
+  [32mPASS[0m  report carries recommendations
+  [32mPASS[0m  report carries a timeline
+  [32mPASS[0m  report carries verification results
+  [32mPASS[0m  GET /reports/pdf returns 200
+  [32mPASS[0m  PDF content-type is application/pdf
+  [32mPASS[0m  PDF begins with %PDF
+  [32mPASS[0m  PDF ends with a valid trailer
+  [32mPASS[0m  PDF is a plausible size
+  [32mPASS[0m  PDF still renders after a simulation
+  [32mPASS[0m  report reflects the active simulation
+
+[1mIdempotency[0m
+  [32mPASS[0m  init_db() is idempotent — no duplicate seeding
+
+[1m88/88 checks passed[0m
+[32mAll backend endpoints verified.[0m
+exit=0

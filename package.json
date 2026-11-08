@@ -2,7 +2,7 @@
   "name": "iotshield-verify",
   "private": true,
   "version": "1.0.0",
-  "description": "IoTShield Verify \u2014 a formal verification approach to IoT malware analysis, detection, and resilience. Demonstration console.",
+  "description": "IoTShield Verify — a formal verification approach to IoT malware analysis, detection, and resilience. Demonstration console.",
   "type": "module",
   "scripts": {
     "dev:frontend": "npm --prefix frontend run dev",
@@ -14,7 +14,8 @@
     "verify:parity": "node tools/dump_mock.mjs > /tmp/iotshield-ts-mock.json && python3 tools/check_parity.py /tmp/iotshield-ts-mock.json",
     "verify:model": "node --max-old-space-size=6000 tools/verify_model.mjs",
     "verify:model:write": "node --max-old-space-size=6000 tools/verify_model.mjs --write",
-    "verify:crosscheck": "python3 tools/crosscheck_model.py"
+    "verify:crosscheck": "python3 tools/crosscheck_model.py",
+    "verify:scale": "node --max-old-space-size=6000 tools/verify_scale.mjs"
   },
   "devDependencies": {
     "esbuild": "^0.25.0",

@@ -120,7 +120,7 @@ function buildAnswer(key: PromptKey, ctx: AnswerContext): { content: string; ref
       if (failed.length === 0) {
         return {
           content: [
-            'Nothing is failing right now — all six properties are satisfied against the current marking.',
+            'Nothing is failing right now — all eight properties are satisfied against the current marking.',
             '',
             'Worth being precise about what that means: the two properties that fail in the baseline model, Malware Containment and Data Leakage Prevention, are *vacuously* satisfied here because no token has reached Malware Execution. The violation has not been fixed; this run simply never visits the marking that exposes it.',
           ].join('\n'),

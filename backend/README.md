@@ -38,7 +38,7 @@ Interactive API documentation: **http://localhost:8000/docs**
 | GET | `/events` | `limit`, `verdict` | Network events (500), newest first |
 | GET | `/alerts` | `severity`, `q`, `sort` | The triage queue (150) |
 | GET | `/malware` | — | Malware families (10) |
-| GET | `/verification` | — | Model-checking run (6 properties) |
+| GET | `/verification` | — | Model-checking run (8 properties) |
 | GET | `/resilience` | — | Containment, workflow, stability |
 | GET | `/scenarios` | — | The five scripted scenarios |
 | POST | `/simulation/start` | body: `{ scenario }` | A complete scripted run |

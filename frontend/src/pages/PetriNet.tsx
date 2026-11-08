@@ -5,11 +5,14 @@
  * Tokens carry a colour; transition guards test it; the same structure routes
  * benign and malicious traffic differently on colour alone.
  *
- * The module exists to make one argument visible: Analyse Behaviour and Detect
- * Malware compete for tokens in the hazardous place, so isolation is
- * *reachable* without being *inevitable*. Let it run and the deferral counter
- * climbs — that counter is the containment counterexample, observed rather
- * than asserted.
+ * The module makes the VP-05 containment defect visible: a token can leave
+ * Malware Execution back to Suspicious Behaviour without a new observation
+ * being recorded, so isolation is *reachable* without being *inevitable*. Let
+ * it run and the deferral counter climbs.
+ *
+ * This animation fires transitions simultaneously for legibility and is NOT
+ * the verified artefact. Verdicts and counterexamples come from the model
+ * checker in components/petri/formal/ (see VERIFICATION_EVIDENCE.md).
  */
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
@@ -584,13 +587,12 @@ export default function PetriNet() {
               </p>
               <p className="mt-1 text-[12px] leading-relaxed text-ink-300">
                 A token left Malware Execution back to Suspicious Behaviour
-                instead of progressing to Detection. Each occurrence is one
-                witness to{' '}
-                <code className="font-mono text-bad">
-                  AG (MalwareExecution → AF Isolated)
-                </code>{' '}
-                failing: isolation stays reachable, but the scheduler is free to
-                keep choosing the analysis branch, so it is never guaranteed.
+                without a new observation being recorded. Repeated, this keeps
+                the detector from becoming enabled, which is why{' '}
+                <code className="font-mono text-bad">VP-05 Malware Containment</code>{' '}
+                fails in the baseline model: isolation stays reachable but is
+                never guaranteed. This view is an animation; verdicts come from
+                the model checker.
               </p>
             </div>
           </motion.div>

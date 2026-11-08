@@ -77,7 +77,7 @@ const NORMAL_SCRIPT: StepSeed[] = [
     phase: 'Verification',
     label: 'Model re-checked — all properties hold',
     detail:
-      'The Coloured Petri Net was re-verified against the current marking. Six of six properties are satisfied, including malware containment, which fails only once an execution token is present.',
+      'The Coloured Petri Net was re-verified against the current marking. All eight properties are satisfied against this marking, including malware containment, which fails only once an execution token is present.',
     severity: 'Low',
     atOffsetMs: 4200,
     place: 'verify',
@@ -152,7 +152,7 @@ const MIRAI_SCRIPT: StepSeed[] = [
     phase: 'Verification',
     label: 'Containment property violated',
     detail:
-      'AG (MalwareExecution → AF Isolated) failed. Detect Malware and Analyse Behaviour were concurrently enabled, so isolation is reachable but not inevitable.',
+      'VP-05 fails in the baseline model: the deferral arc returns the device to Suspicious Behaviour without recording a new observation, so the detector can stay disabled indefinitely. Isolation is reachable but not inevitable.',
     severity: 'Critical',
     atOffsetMs: 6300,
     place: 'verify',
@@ -711,7 +711,7 @@ function resilienceFor(
           description:
             profile.violates.length > 0
               ? `Re-check against the post-isolation marking returned ${profile.violates.length} violated propert${profile.violates.length === 1 ? 'y' : 'ies'}. Containment held in practice but is not guaranteed by the model.`
-              : 'Re-check against the post-isolation marking confirmed all six properties hold.',
+              : 'Re-check against the post-isolation marking confirmed all eight properties hold.',
           status: profile.violates.length > 0 ? 'Failed' : 'Complete',
           at: new Date(startedAt + 6_300).toISOString(),
           durationSec: 48,

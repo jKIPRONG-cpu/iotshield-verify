@@ -36,7 +36,7 @@ its posture — all from a single scripted result.
 | Threat Detection | 5 scripted scenarios with a phased, animated run log |
 | Security Alerts | Triage queue with search, filtering, sorting, MITRE mapping |
 | **Coloured Petri Nets** | Interactive executable model — play / pause / step / reset |
-| Formal Verification | 6 CTL & LTL properties with counterexamples and recommendations |
+| Formal Verification | 8 CTL & LTL properties, with weak-fairness verdicts, counterexamples and recommendations |
 | Resilience Center | Containment rings, recovery workflow, stability trace |
 | Incident Reports | Full assessment with browser print **and** ReportLab PDF export |
 | Settings | Detection tuning, interface options, API connection status |
@@ -128,11 +128,12 @@ equivalent, and says so when the backend is unreachable.
 
 ## Verifying the build
 
-Three verification scripts ship with the project. All three pass on a clean
-checkout.
+The project ships three application checks and four model checks. Logs of
+each run are kept in `verification-logs/`.
 
 ```bash
-npm install                 # root: installs the verification tooling
+npm install                                  # root: installs the verification tooling
+pip install -r backend/requirements-dev.txt  # backend + the test client
 
 # 1. Backend — every endpoint, status codes, payload shapes, PDF magic bytes
 npm run verify:backend      # 88 checks
@@ -141,9 +142,17 @@ npm run verify:backend      # 88 checks
 npm run verify:parity
 
 # 3. Frontend — all 12 routes in headless Chromium, simulation propagation,
-#    Petri-net controls, assistant, paint checks, responsive overflow
+#    Petri-net controls, assistant, paint checks, responsive overflow.
+#    Start the backend first (cd backend && python3 run.py): one check
+#    expects the "Live API" badge.
 cd frontend && npm run build && npm run preview &   # serves :4173
 npm run verify:frontend     # 81 checks
+
+# Model checks
+npm run verify:model        # the model checker, 3 devices
+npm run verify:crosscheck   # independent Python re-implementation
+npm run verify:scale        # 3, 4 and 5 devices
+python3 eventb/tools/interpret_eventb.py   # Event-B transcription, 3 devices
 ```
 
 The frontend check needs a headless Chromium:
@@ -160,7 +169,7 @@ drift:
 
 ```
 PARITY OK — the TypeScript and Python datasets agree field-for-field.
-  devices=40 events=500 alerts=150 malware=10 properties=6
+  devices=40 events=500 alerts=150 malware=10 properties=8
 ```
 
 ---

@@ -1264,158 +1264,12 @@ def generate_alerts(rng: Rng, devices: list[dict[str, Any]]) -> list[dict[str, A
 # Formal verification
 # ==========================================================================
 
-VERIFICATION_SEEDS: list[dict[str, Any]] = [
-    {
-        "id": "VP-01",
-        "name": "Authentication Integrity",
-        "formula": "AG (MalwareExecution → EF Authenticated)",
-        "logic": "CTL",
-        "status": "Verified",
-        "category": "Security",
-        "description": (
-            "No token may reach the Malware Execution place without first passing through the "
-            "Authenticate transition — the model admits no path that bypasses identity establishment."
-        ),
-        "reason": (
-            "Exhaustive exploration of the reachability graph found no firing sequence in which a "
-            "token enters Malware Execution with an unauthenticated colour. The Authenticate "
-            "transition is a cut vertex on every such path."
-        ),
-        "recommendation": (
-            "Hold this invariant when extending the model. Any new transition writing into Malware "
-            "Execution must consume from Authentication, or the property will regress."
-        ),
-        "counterexample": None,
-    },
-    {
-        "id": "VP-02",
-        "name": "Safe State Reachability",
-        "formula": "AG (EF (Idle ∨ Recovery))",
-        "logic": "CTL",
-        "status": "Verified",
-        "category": "Reachability",
-        "description": (
-            "From every reachable state the system retains a path back to a safe state — either "
-            "Idle or Recovery. No compromise is terminal within the model."
-        ),
-        "reason": (
-            "All 18,432 reachable markings were checked; each retains at least one firing sequence "
-            "terminating in a safe marking. The longest such path is 14 transitions from deep in "
-            "the Malware Execution subnet."
-        ),
-        "recommendation": (
-            "Recovery capacity is what makes this hold. If the Recover Device transition is ever "
-            "gated on an external dependency, re-verify — the property is sensitive to that edge."
-        ),
-        "counterexample": None,
-    },
-    {
-        "id": "VP-03",
-        "name": "Deadlock Freedom",
-        "formula": "AG (EX true)",
-        "logic": "CTL",
-        "status": "Verified",
-        "category": "Liveness",
-        "description": (
-            "The net contains no dead marking: from every reachable state at least one transition "
-            "remains enabled, so the model can never wedge."
-        ),
-        "reason": (
-            "No terminal markings were found in the full state space. Every place with outgoing "
-            "arcs retains an enabled successor under all reachable colour bindings."
-        ),
-        "recommendation": (
-            "Preserve the token-recycling arc from Recovery back to Idle. Removing it introduces "
-            "terminal markings and this property fails immediately."
-        ),
-        "counterexample": None,
-    },
-    {
-        "id": "VP-04",
-        "name": "Isolation Successful",
-        "formula": "AG (Isolated → AX ¬Transmitting)",
-        "logic": "CTL",
-        "status": "Verified",
-        "category": "Safety",
-        "description": (
-            "Once a device token enters the Isolation place, no subsequent state permits it to "
-            "emit network traffic until Recovery completes."
-        ),
-        "reason": (
-            "The Isolate Device transition consumes the device colour and re-emits it under an "
-            "isolated binding for which no transmission transition has a matching guard. The "
-            "restriction holds across all 2,164 isolation-reachable markings."
-        ),
-        "recommendation": (
-            "The guarantee rests on guard correctness. Add a regression check on the isolation "
-            "guard whenever the colour set is extended."
-        ),
-        "counterexample": None,
-    },
-    {
-        "id": "VP-05",
-        "name": "Malware Containment",
-        "formula": "AG (MalwareExecution → AF Isolated)",
-        "logic": "CTL",
-        "status": "Failed",
-        "category": "Safety",
-        "description": (
-            "Every token entering Malware Execution should inevitably reach Isolation. This "
-            "property does not hold."
-        ),
-        "reason": (
-            "A counterexample exists: when Detect Malware and Analyse Behaviour are concurrently "
-            "enabled on the same device colour, the scheduler may fire Analyse Behaviour first, "
-            "returning the token to Suspicious Behaviour. The resulting cycle can repeat "
-            "indefinitely, so isolation is possible but not inevitable. In 3.1% of sampled runs "
-            "the token remained in the loop past the detection deadline."
-        ),
-        "recommendation": (
-            "Add a priority guard so Detect Malware pre-empts Analyse Behaviour once the suspicion "
-            "counter crosses its threshold, or introduce a bounded retry colour that forces "
-            "isolation after k analysis cycles. Either change makes the eventuality unconditional."
-        ),
-        "counterexample": [
-            "PacketReceived → Authenticate",
-            "Authentication → AnalyseBehaviour",
-            "SuspiciousBehaviour → DetectMalware",
-            "MalwareExecution → AnalyseBehaviour  ⟲ (cycle re-entered)",
-            "SuspiciousBehaviour → AnalyseBehaviour  ⟲ (no progress toward Isolation)",
-        ],
-    },
-    {
-        "id": "VP-06",
-        "name": "Data Leakage Prevention",
-        "formula": "G ¬(Exfiltrating ∧ ¬Detected)",
-        "logic": "LTL",
-        "status": "Failed",
-        "category": "Security",
-        "description": (
-            "No execution should contain a state in which data leaves the device before detection "
-            "has fired. This property does not hold."
-        ),
-        "reason": (
-            "The Detect Malware transition requires two consecutive suspicious observations before "
-            "firing, which leaves a one-observation window during which the exfiltration arc is "
-            "already enabled. The model checker produced a trace in which 1 of 12 exfiltration "
-            "events precedes detection — a mean exposure of roughly 4.2 seconds at the sampled "
-            "observation rate."
-        ),
-        "recommendation": (
-            "Introduce an egress-volume guard that fires on the first observation when transferred "
-            "bytes exceed the device baseline, rather than waiting for a second behavioural sample. "
-            "Alternatively, gate the exfiltration arc on a detection token so the two cannot be "
-            "concurrently enabled."
-        ),
-        "counterexample": [
-            "MalwareExecution → EstablishC2",
-            "C2Established → BeginTransfer   (exfiltration arc enabled)",
-            "Transferring → ObserveBehaviour (first suspicious observation)",
-            "Transferring → ObserveBehaviour (second observation — detection fires, too late)",
-            "DetectMalware → Isolate         (bytes already left the device)",
-        ],
-    },
-]
+# The verification run is computed by the model checker (see
+# _load_computed_verification). The six authored property entries that used to
+# live here were removed; only their count is kept, because generate_verification
+# still consumes one block of draws per former entry so that dataset parity with
+# mock.ts is unchanged.
+LEGACY_VERIFICATION_DRAWS = 6
 
 
 # --------------------------------------------------------------------------
@@ -1519,7 +1373,7 @@ def generate_verification(rng: Rng) -> dict[str, Any]:
     `rng` is still consumed in the original sequence so the rest of the dataset
     — and therefore parity with the TypeScript generator — is unaffected.
     """
-    for _ in VERIFICATION_SEEDS:
+    for _ in range(LEGACY_VERIFICATION_DRAWS):
         rng.int(4_200, 18_600)
         rng.int(9_800, 54_000)
         rng.int(180, 3_400)
