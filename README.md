@@ -36,7 +36,7 @@ its posture — all from a single scripted result.
 | Threat Detection | 5 scripted scenarios with a phased, animated run log |
 | Security Alerts | Triage queue with search, filtering, sorting, MITRE mapping |
 | **Coloured Petri Nets** | Interactive executable model — play / pause / step / reset |
-| Formal Verification | 6 CTL & LTL properties with counterexamples and recommendations |
+| Formal Verification | 8 CTL & LTL properties, with weak-fairness verdicts, counterexamples and recommendations |
 | Resilience Center | Containment rings, recovery workflow, stability trace |
 | Incident Reports | Full assessment with browser print **and** ReportLab PDF export |
 | Settings | Detection tuning, interface options, API connection status |
@@ -46,17 +46,29 @@ from live application state, so what it says matches what is on screen.
 
 ### The finding the demo is built around
 
-Four of the six formal properties hold. Two do not — **Malware Containment** and
-**Data Leakage Prevention** — and those failures are the point, not a bug.
+The formal model is checked against eight properties, in two variants of the
+same net (full evidence in [`VERIFICATION_EVIDENCE.md`](VERIFICATION_EVIDENCE.md)):
 
-In every simulated run the *response works*: the threat is caught and the device
-quarantined. What model checking establishes is subtler: because `Analyse
-Behaviour` and `Detect Malware` are concurrently enabled on the same token, a
-scheduler may keep choosing the analysis branch, so containment is **reachable
-but not inevitable**. No amount of testing surfaces that — it is a property of
-the state space, not of any single execution. Let the Petri net run and the
-"containment deferred" counter climbs; each increment is a live witness to the
-counterexample.
+| Model | Reachable states | Holds | Holds under weak fairness |
+|---|---|---|---|
+| Baseline | 15,876 | 6 of 8 | 6 of 8 |
+| Hardened | 5,184 | 7 of 8 | 8 of 8 |
+
+The two baseline failures — **VP-05 Malware Containment** and **VP-06 Data
+Leakage Prevention** — are the point, not a bug. In the baseline, a deferral arc
+returns a compromised device from Malware Execution to Suspicious Behaviour
+without recording a new observation, so a schedule that keeps deferring never
+enables the detector: containment is **reachable but not inevitable**. No amount
+of testing surfaces that — it is a property of the state space, not of any
+single execution. The hardened net bounds the retries; containment then holds
+under weak fairness. Exfiltration is held until detection has ruled, which in
+this model makes the exfiltration transition dead, so VP-06 holds because a
+compromised device can no longer transfer at all.
+
+The results have been reproduced three ways: by the TypeScript checker
+(`npm run verify:model`), by an independent Python re-implementation
+(`npm run verify:crosscheck`), and by an Event-B transcription of the same net
+(`eventb/`), which yields the identical state space.
 
 ---
 
@@ -116,22 +128,31 @@ equivalent, and says so when the backend is unreachable.
 
 ## Verifying the build
 
-Three verification scripts ship with the project. All three pass on a clean
-checkout.
+The project ships three application checks and four model checks. Logs of
+each run are kept in `verification-logs/`.
 
 ```bash
-npm install                 # root: installs the verification tooling
+npm install                                  # root: installs the verification tooling
+pip install -r backend/requirements-dev.txt  # backend + the test client
 
 # 1. Backend — every endpoint, status codes, payload shapes, PDF magic bytes
-npm run verify:backend      # 86 checks
+npm run verify:backend      # 88 checks
 
 # 2. Cross-language dataset parity (see below)
 npm run verify:parity
 
 # 3. Frontend — all 12 routes in headless Chromium, simulation propagation,
-#    Petri-net controls, assistant, paint checks, responsive overflow
+#    Petri-net controls, assistant, paint checks, responsive overflow.
+#    Start the backend first (cd backend && python3 run.py): one check
+#    expects the "Live API" badge.
 cd frontend && npm run build && npm run preview &   # serves :4173
-npm run verify:frontend     # 56 checks
+npm run verify:frontend     # 81 checks
+
+# Model checks
+npm run verify:model        # the model checker, 3 devices
+npm run verify:crosscheck   # independent Python re-implementation
+npm run verify:scale        # 3, 4 and 5 devices
+python3 eventb/tools/interpret_eventb.py   # Event-B transcription, 3 devices
 ```
 
 The frontend check needs a headless Chromium:
@@ -148,7 +169,7 @@ drift:
 
 ```
 PARITY OK — the TypeScript and Python datasets agree field-for-field.
-  devices=40 events=500 alerts=150 malware=10 properties=6
+  devices=40 events=500 alerts=150 malware=10 properties=8
 ```
 
 ---

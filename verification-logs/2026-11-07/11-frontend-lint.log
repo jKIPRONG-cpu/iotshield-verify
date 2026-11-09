@@ -1,0 +1,165 @@
+$ npm --prefix frontend run lint
+started: 2026-11-07T17:44:51+03:00
+
+> iotshield-verify-frontend@1.0.0 lint
+> eslint .
+
+
+/mnt/c/Users/Cossy/Desktop/iotshield-verify-main/frontend/src/api/DataContext.tsx
+  54:5  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+/mnt/c/Users/Cossy/Desktop/iotshield-verify-main/frontend/src/api/DataContext.tsx:54:5
+  52 |   useEffect(() => {
+  53 |     const controller = new AbortController()
+> 54 |     setChecking(true)
+     |     ^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  55 |
+  56 |     api
+  57 |       .health(controller.signal)  react-hooks/set-state-in-effect
+
+/mnt/c/Users/Cossy/Desktop/iotshield-verify-main/frontend/src/components/Shell.tsx
+   58:14  error  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     react-refresh/only-export-components
+  541:19  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+/mnt/c/Users/Cossy/Desktop/iotshield-verify-main/frontend/src/components/Shell.tsx:541:19
+  539 |
+  540 |   // Close the mobile drawer whenever the route changes.
+> 541 |   useEffect(() => setDrawerOpen(false), [location.pathname])
+      |                   ^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  542 |
+  543 |   // Lock body scroll while the drawer is open.
+  544 |   useEffect(() => {  react-hooks/set-state-in-effect
+
+/mnt/c/Users/Cossy/Desktop/iotshield-verify-main/frontend/src/components/charts.tsx
+  97:14  error  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+/mnt/c/Users/Cossy/Desktop/iotshield-verify-main/frontend/src/components/petri/formal/check.ts
+  585:7  error  The value assigned to 'violating' is not used in subsequent statements  no-useless-assignment
+
+/mnt/c/Users/Cossy/Desktop/iotshield-verify-main/frontend/src/components/petri/nodes.tsx
+  200:14  error  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+/mnt/c/Users/Cossy/Desktop/iotshield-verify-main/frontend/src/context/AppState.tsx
+  346:7  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+/mnt/c/Users/Cossy/Desktop/iotshield-verify-main/frontend/src/context/AppState.tsx:346:7
+  344 |     const query = window.matchMedia('(prefers-reduced-motion: reduce)')
+  345 |     if (query.matches) {
+> 346 |       setSettings((prev) => ({ ...prev, animations: false }))
+      |       ^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  347 |     }
+  348 |   }, [])
+  349 |  react-hooks/set-state-in-effect
+
+/mnt/c/Users/Cossy/Desktop/iotshield-verify-main/frontend/src/hooks/useResource.ts
+  43:3  error  Error: Cannot access refs during render
+
+React refs are values that are not needed for rendering. Refs should only be accessed outside of render, such as in event handlers or effects. Accessing a ref value (the `current` property) during render can cause your component not to update as expected (https://react.dev/reference/react/useRef).
+
+/mnt/c/Users/Cossy/Desktop/iotshield-verify-main/frontend/src/hooks/useResource.ts:43:3
+  41 |   // fetchers are re-created every render and would otherwise loop forever.
+  42 |   const fetcherRef = useRef(fetcher)
+> 43 |   fetcherRef.current = fetcher
+     |   ^^^^^^^^^^^^^^^^^^ Cannot update ref during render
+  44 |
+  45 |   const fallbackRef = useRef(fallback)
+  46 |   fallbackRef.current = fallback                                                                                                                                                                                                                                        react-hooks/refs
+  46:3  error  Error: Cannot access refs during render
+
+React refs are values that are not needed for rendering. Refs should only be accessed outside of render, such as in event handlers or effects. Accessing a ref value (the `current` property) during render can cause your component not to update as expected (https://react.dev/reference/react/useRef).
+
+/mnt/c/Users/Cossy/Desktop/iotshield-verify-main/frontend/src/hooks/useResource.ts:46:3
+  44 |
+  45 |   const fallbackRef = useRef(fallback)
+> 46 |   fallbackRef.current = fallback
+     |   ^^^^^^^^^^^^^^^^^^^ Cannot update ref during render
+  47 |
+  48 |   useEffect(() => {
+  49 |     const controller = new AbortController()                                                                                                                                                                                                                                                                                                                      react-hooks/refs
+  52:5  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+/mnt/c/Users/Cossy/Desktop/iotshield-verify-main/frontend/src/hooks/useResource.ts:52:5
+  50 |     let active = true
+  51 |
+> 52 |     setLoading(true)
+     |     ^^^^^^^^^^ Avoid calling setState() directly within an effect
+  53 |     setSource('loading')
+  54 |
+  55 |     fetcherRef  react-hooks/set-state-in-effect
+
+/mnt/c/Users/Cossy/Desktop/iotshield-verify-main/frontend/src/pages/MalwareAnalysis.tsx
+  314:7  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+/mnt/c/Users/Cossy/Desktop/iotshield-verify-main/frontend/src/pages/MalwareAnalysis.tsx:314:7
+  312 |   useEffect(() => {
+  313 |     if (families.length > 0 && !families.some((f) => f.id === selectedId)) {
+> 314 |       setSelectedId(families[0].id)
+      |       ^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  315 |     }
+  316 |   }, [families, selectedId])
+  317 |  react-hooks/set-state-in-effect
+
+/mnt/c/Users/Cossy/Desktop/iotshield-verify-main/frontend/src/pages/NetworkActivity.tsx
+  162:17  error  Error: Cannot call impure function during render
+
+`Date.now` is an impure function. Calling an impure function can produce unstable results that update unpredictably when the component happens to re-render. (https://react.dev/reference/rules/components-and-hooks-must-be-pure#components-and-hooks-must-be-idempotent).
+
+/mnt/c/Users/Cossy/Desktop/iotshield-verify-main/frontend/src/pages/NetworkActivity.tsx:162:17
+  160 | function VolumeStrip({ events }: { events: NetworkEvent[] }) {
+  161 |   const buckets = useMemo(() => {
+> 162 |     const now = Date.now()
+      |                 ^^^^^^^^^^ Cannot call impure function
+  163 |     const slots = Array.from({ length: 24 }, () => ({
+  164 |       total: 0,
+  165 |       malicious: 0,                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    react-hooks/purity
+  267:19  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+/mnt/c/Users/Cossy/Desktop/iotshield-verify-main/frontend/src/pages/NetworkActivity.tsx:267:19
+  265 |   // Reset the reveal window whenever the filter changes, so switching to
+  266 |   // "Malicious only" does not show a near-empty feed.
+> 267 |   useEffect(() => setRevealed(LIVE_SEED), [query, verdict, mode])
+      |                   ^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  268 |
+  269 |   /** Streaming: reveal one more event on each tick. */
+  270 |   const timerRef = useRef<number | null>(null)  react-hooks/set-state-in-effect
+
+✖ 13 problems (13 errors, 0 warnings)
+
+
+finished: 2026-11-07T17:48:05+03:00  duration: 193s  exit=1

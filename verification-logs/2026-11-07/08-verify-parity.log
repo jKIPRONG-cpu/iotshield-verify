@@ -1,0 +1,10 @@
+$ npm run verify:parity
+started: 2026-11-07T17:43:16+03:00
+
+> iotshield-verify@1.0.0 verify:parity
+> node tools/dump_mock.mjs > /tmp/iotshield-ts-mock.json && python3 tools/check_parity.py /tmp/iotshield-ts-mock.json
+
+PARITY OK — the TypeScript and Python datasets agree field-for-field.
+  devices=40 events=500 alerts=150 malware=10 properties=8
+
+finished: 2026-11-07T17:43:19+03:00  duration: 3s  exit=0

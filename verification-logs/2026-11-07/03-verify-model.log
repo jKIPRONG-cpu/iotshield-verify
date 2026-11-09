@@ -1,0 +1,115 @@
+$ npm run verify:model
+started: 2026-11-07T17:38:48+03:00
+
+> iotshield-verify@1.0.0 verify:model
+> node --max-old-space-size=6000 tools/verify_model.mjs
+
+
+[1mBASELINE MODEL[0m
+  [2mstates[0m 15,876   [2mtransitions[0m 70,400   [2mterminal[0m 0   [2mexplored in[0m 511ms
+
+  [32mPASS[0m  VP-01 Authentication Integrity
+  [32mPASS[0m  VP-02 Safe State Reachability
+  [32mPASS[0m  VP-03 Deadlock Freedom
+  [32mPASS[0m  VP-04 Isolation Successful
+  [31mFAIL[0m  VP-05 Malware Containment [2m(5600 violating states)[0m  [2m[fair: Failed][0m
+  [31mFAIL[0m  VP-06 Data Leakage Prevention [2m(3332 violating states)[0m
+  [32mPASS[0m  VP-07 Critical Asset Safety
+  [32mPASS[0m  VP-08 Lateral Movement Bound
+
+  [1m6/8 satisfied[0m   [2m(6/8 under weak fairness)[0m
+
+[1mHARDENED MODEL[0m
+  [2mstates[0m 5,184   [2mtransitions[0m 19,888   [2mterminal[0m 0   [2mexplored in[0m 153ms
+
+  [32mPASS[0m  VP-01 Authentication Integrity
+  [32mPASS[0m  VP-02 Safe State Reachability
+  [32mPASS[0m  VP-03 Deadlock Freedom
+  [32mPASS[0m  VP-04 Isolation Successful
+  [31mFAIL[0m  VP-05 Malware Containment [2m(1596 violating states)[0m  [2m[under weak fairness: Verified][0m
+  [32mPASS[0m  VP-06 Data Leakage Prevention
+  [32mPASS[0m  VP-07 Critical Asset Safety
+  [32mPASS[0m  VP-08 Lateral Movement Bound
+
+  [1m7/8 satisfied[0m   [2m(8/8 under weak fairness)[0m
+
+[1mBASELINE COUNTEREXAMPLES[0m
+
+  [31mVP-05 Malware Containment[0m
+  [2mAG ((∃d . place(d) = MalwareExecution) → AF (∃d . place(d) = Isolation))[0m
+     1.    t-receive(GW-1)
+     2.    t-auth(GW-1)
+     3.    t-analyse(GW-1)
+     4.    t-execute(GW-1)
+     5.    <antecedent holds here — the eventuality must now follow>
+     6.    t-defer(GW-1)
+     7.    t-reobserve(GW-1)
+     8.    t-reobserve(GW-1)
+     9. ↻ t-reobserve(GW-1)
+
+  [31mVP-06 Data Leakage Prevention[0m
+  [2mG ¬(∃d . place(d) = Exfiltration ∧ ¬detected(d))[0m
+     1.    t-receive(GW-1)
+     2.    t-auth(GW-1)
+     3.    t-analyse(GW-1)
+     4.    t-execute(GW-1)
+     5.    t-exfil(GW-1)
+     6.    <property violated in the marking above>
+
+[1m[31mHARDENED — REMAINING FAILURES[0m
+
+  [31mVP-05 Malware Containment[0m
+     1. t-receive(GW-1)
+     2. t-auth(GW-1)
+     3. t-analyse(GW-1)
+     4. t-execute(GW-1)
+     5. <antecedent holds here — the eventuality must now follow>
+     6. t-defer(GW-1)
+     7. t-reobserve(GW-1)
+     8. t-reobserve(GW-1)
+     9. t-execute(GW-1)
+    10. t-detect(GW-1)
+    11. t-verify(GW-1)
+    12. t-receive(TH-1)
+    13. t-auth(TH-1)
+    14. t-infect(GW-1 -> TH-1)
+    15. t-reobserve(TH-1)
+    16. t-reobserve(TH-1)
+    17. t-reobserve(TH-1)
+    18. t-execute(TH-1)
+    19. t-detect(TH-1)
+    20. t-verify(TH-1)
+    21. t-receive(PLC-1)
+    22. t-auth(PLC-1)
+    23. t-analyse(PLC-1)
+    24. t-restore(PLC-1)
+
+[1mHETEROGENEOUS INTERACTION SCENARIOS[0m
+[2m  Each answer is computed by reachability over a two-device net.[0m
+
+  SC-1  [31mPROPAGATED[0m  [32mok[0m  Compromised gateway → vulnerable actuator (same zone)
+        [2mguard: route strength 2 overcomes hardening 1[0m
+        [2mstates explored: 1,296[0m
+  SC-2  [32mBLOCKED[0m  [32mok[0m  Compromised gateway → hardened industrial controller
+        [2mguard: route strength 1 does not overcome hardening 2[0m
+        [2mstates explored: 144[0m
+  SC-3  [31mPROPAGATED[0m  [32mok[0m  Compromised sensor → temperature actuator
+        [2mguard: route strength 2 overcomes hardening 1[0m
+        [2mstates explored: 1,296[0m
+  SC-4  [32mBLOCKED[0m  [32mok[0m  Compromised sensor → smart camera
+        [2mguard: no route exists from Motion Sensor to Smart Camera[0m
+        [2mstates explored: 144[0m
+  SC-5  [32mBLOCKED[0m  [32mok[0m  Cross-zone: compromised clinical monitor → plant controller
+        [2mguard: zone clinical cannot route to plant[0m
+        [2mstates explored: 144[0m
+  SC-6  [31mPROPAGATED[0m  [32mok[0m  Cross-zone permitted: compromised gateway → clinical monitor
+        [2mguard: route strength 1 overcomes hardening 0[0m
+        [2mstates explored: 1,296[0m
+
+  [32mAll 6 scenarios agree with the declared guard.[0m
+
+[1mDELTA[0m
+  VP-06 Data Leakage Prevention: [31mFailed[0m -> [32mVerified[0m
+  state space: 15,876 -> 5,184 (-67.3%)
+
+finished: 2026-11-07T17:38:52+03:00  duration: 4s  exit=0

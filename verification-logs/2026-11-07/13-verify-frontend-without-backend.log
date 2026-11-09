@@ -1,0 +1,104 @@
+$ npm run verify:frontend
+started: 2026-11-07T17:53:22+03:00
+
+> iotshield-verify@1.0.0 verify:frontend
+> node tools/verify_frontend.mjs
+
+
+[1mRoutes (http://127.0.0.1:4173)[0m
+  [32mPASS[0m  Executive Dashboard renders
+  [32mPASS[0m  Executive Dashboard has no console errors
+  [32mPASS[0m  Executive Dashboard actually paints
+  [32mPASS[0m  Analytics renders
+  [32mPASS[0m  Analytics has no console errors
+  [32mPASS[0m  Analytics actually paints
+  [32mPASS[0m  IoT Devices renders
+  [32mPASS[0m  IoT Devices has no console errors
+  [32mPASS[0m  IoT Devices actually paints
+  [32mPASS[0m  Network Activity renders
+  [32mPASS[0m  Network Activity has no console errors
+  [32mPASS[0m  Network Activity actually paints
+  [32mPASS[0m  Malware Analysis renders
+  [32mPASS[0m  Malware Analysis has no console errors
+  [32mPASS[0m  Malware Analysis actually paints
+  [32mPASS[0m  Threat Detection renders
+  [32mPASS[0m  Threat Detection has no console errors
+  [32mPASS[0m  Threat Detection actually paints
+  [32mPASS[0m  Security Alerts renders
+  [32mPASS[0m  Security Alerts has no console errors
+  [32mPASS[0m  Security Alerts actually paints
+  [32mPASS[0m  Coloured Petri Net renders
+  [32mPASS[0m  Coloured Petri Net has no console errors
+  [32mPASS[0m  Coloured Petri Net actually paints
+  [32mPASS[0m  Formal Verification renders
+  [32mPASS[0m  Formal Verification has no console errors
+  [32mPASS[0m  Formal Verification actually paints
+  [32mPASS[0m  Resilience Center renders
+  [32mPASS[0m  Resilience Center has no console errors
+  [32mPASS[0m  Resilience Center actually paints
+  [32mPASS[0m  Incident Reports renders
+  [32mPASS[0m  Incident Reports has no console errors
+  [32mPASS[0m  Incident Reports actually paints
+  [32mPASS[0m  Settings renders
+  [32mPASS[0m  Settings has no console errors
+  [32mPASS[0m  Settings actually paints
+
+[1mBackend integration[0m
+  [31mFAIL[0m  Device inventory reports the live API [2m— source badge did not read "Live API"[0m
+  [32mPASS[0m  Device inventory renders 40 devices
+
+[1mSimulation propagation[0m
+  [32mPASS[0m  Simulation starts and reports progress
+  [32mPASS[0m  Simulation completes
+  [32mPASS[0m  Run log emitted all phases
+  [32mPASS[0m  No errors during the run
+  [32mPASS[0m  Verification reflects the run
+  [32mPASS[0m  Verification shows a violated property
+  [32mPASS[0m  Resilience reflects the run
+  [32mPASS[0m  Petri net rendered its places
+  [32mPASS[0m  Petri net shows the colour legend
+
+[1mPetri net controls[0m
+  [32mPASS[0m  Step advances the net
+  [32mPASS[0m  Play/Pause toggle works
+  [32mPASS[0m  Reset restores the net
+  [32mPASS[0m  No errors driving the net
+
+[1mAssistant and responsiveness[0m
+  [32mPASS[0m  Assistant answers a question
+  [32mPASS[0m  No horizontal page overflow at 390px
+  [32mPASS[0m  No horizontal page overflow on the dashboard at 390px
+  [32mPASS[0m  Landing shows the official research title verbatim
+  [32mPASS[0m  Landing shows the subtitle
+  [32mPASS[0m  Landing shows both calls to action
+  [32mPASS[0m  Landing section present: Research Overview
+  [32mPASS[0m  Landing section present: Core Modules
+  [32mPASS[0m  Landing section present: Research Workflow
+  [32mPASS[0m  Landing section present: Platform Capabilities
+  [32mPASS[0m  Landing section present: Why Formal Verification
+  [32mPASS[0m  Landing section present: Research Project
+  [32mPASS[0m  Hero shows the research positioning line
+  [32mPASS[0m  Hero shows a scroll cue
+  [32mPASS[0m  Scroll cue is visible at the top and fades after scrolling
+  [32mPASS[0m  Landing has no console errors
+  [32mPASS[0m  Landing actually paints
+  [32mPASS[0m  Launch Dashboard reaches the console
+  [32mPASS[0m  View System Architecture has a target
+  [32mPASS[0m  All landing nav anchors resolve
+  [32mPASS[0m  Capability listed: IoT Malware Detection
+  [32mPASS[0m  Capability listed: Formal Verification
+  [32mPASS[0m  Capability listed: Threat Analysis
+  [32mPASS[0m  Capability listed: Resilience Assessment
+  [32mPASS[0m  Capability listed: Interactive Dashboard
+  [32mPASS[0m  Capability listed: Automated Reports
+  [32mPASS[0m  Landing renders without console chrome
+  [32mPASS[0m  No horizontal overflow on the landing page at 390px
+  [32mPASS[0m  No horizontal page overflow at 820px
+  [32mPASS[0m  No errors at small viewports
+
+[1m80/81 checks passed[0m
+
+[31m1 FAILURE(S):[0m
+  · Device inventory reports the live API
+
+finished: 2026-11-07T17:54:47+03:00  duration: 85s  exit=1

@@ -1,0 +1,47 @@
+$ node --max-old-space-size=6000 tools/verify_scale.mjs --devices 3,4
+2026-11-08T18:19:56+03:00
+IoTShield Verify — scalability runs
+node v22.22.0 · Intel(R) Core(TM) i5-8265U CPU @ 1.60GHz · 5928 MB RAM · state cap 3,000,000
+
+3 DEVICES: GW-1, TH-1, PLC-1
+  baseline  states     15,876  transitions      70,400  explored in 0.3 s  rss 113 MB  complete, terminal 0
+    VP-01  Verified
+    VP-02  Verified
+    VP-03  Verified
+    VP-04  Verified
+    VP-05  Failed (5,600 violating)  [weak fairness: Failed]
+    VP-06  Failed (3,332 violating)
+    VP-07  Verified
+    VP-08  Verified
+  hardened  states      5,184  transitions      19,888  explored in 0.1 s  rss 122 MB  complete, terminal 0
+    VP-01  Verified
+    VP-02  Verified
+    VP-03  Verified
+    VP-04  Verified
+    VP-05  Failed (1,596 violating)  [weak fairness: Verified]
+    VP-06  Verified
+    VP-07  Verified
+    VP-08  Verified
+
+4 DEVICES: GW-1, TH-1, PLC-1, SN-1
+  baseline  states  1,000,188  transitions   6,177,276  explored in 28.6 s  rss 1002 MB  complete, terminal 0
+    VP-01  Verified
+    VP-02  Verified
+    VP-03  Verified
+    VP-04  Verified
+    VP-05  Failed (422,744 violating)  [weak fairness: Failed]
+    VP-06  Failed (297,724 violating)
+    VP-07  Verified
+    VP-08  Failed (665,500 violating)
+  hardened  states    186,624  transitions     986,688  explored in 8.6 s  rss 1684 MB  complete, terminal 0
+    VP-01  Verified
+    VP-02  Verified
+    VP-03  Verified
+    VP-04  Verified
+    VP-05  Failed (68,572 violating)  [weak fairness: Verified]
+    VP-06  Verified
+    VP-07  Verified
+    VP-08  Failed (87,808 violating)
+	Maximum resident set size (kbytes): 1818096
+	Exit status: 0
+exit=0 duration=76s

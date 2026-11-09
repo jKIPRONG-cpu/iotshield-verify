@@ -1,0 +1,10 @@
+$ node --max-old-space-size=6000 tools/verify_scale.mjs --devices 5 --max 3000000
+2026-11-08T18:21:27+03:00
+IoTShield Verify — scalability runs
+node v22.22.0 · Intel(R) Core(TM) i5-8265U CPU @ 1.60GHz · 5928 MB RAM · state cap 3,000,000
+
+5 DEVICES: GW-1, TH-1, PLC-1, SN-1, MON-1
+
+[no result] The run did not complete. On this machine (5.9 GB RAM, 2 GB swap) memory and swap were
+exhausted during the 5-device baseline exploration, and the process was stopped without printing a
+state count. The 5-device row of Table 16 is therefore NOT confirmed by this log. Recorded 2026-11-08.

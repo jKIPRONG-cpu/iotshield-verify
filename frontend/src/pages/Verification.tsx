@@ -1,8 +1,9 @@
 /**
  * Formal Verification.
  *
- * The results of model-checking the Coloured Petri Net against six temporal
- * properties — four CTL, two LTL. Four hold; two are violated.
+ * The results of model-checking the Coloured Petri Net against eight temporal
+ * properties — seven CTL, one LTL. In the baseline model six hold; two are
+ * violated.
  *
  * The two failures carry the argument of the thesis, so the page treats them
  * as the main content rather than as errors to be minimised: each failed

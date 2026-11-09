@@ -1,0 +1,29 @@
+$ python3 eventb/tools/rodin_status.py verification-logs/2026-11-09/rodin --open
+# source: C:\rodin\workspace\IoTShieldEventB\*.bps after the run of 2026-11-09 20:52-20:56, copied 20:58
+Component                POs  Auto Manual  Open   by kind (discharged/total)
+C0_Abstract                0     0      0     0   
+C1_Lifecycle               1     1      0     0   WD:1/1
+C2_Instance                0     0      0     0   
+M0_Abstract               16    16      0     0   INV:10/10 WD:6/6
+M1_Baseline              279   271      0     8   GRD:6/6 INV:214/222 THM:4/4 WD:47/47
+M1_Hardened              282   276      0     6   GRD:6/6 INV:216/222 THM:4/4 WD:50/50
+M2_BaselineInstance        0     0      0     0   
+M2_HardenedInstance        0     0      0     0   
+TOTAL                    578   564      0    14
+
+Obligations not discharged (14):
+  M1_Baseline: AnalyseSuspicious/typ5/INV
+  M1_Baseline: AnalyseSuspicious/typ6/INV
+  M1_Baseline: ReObserve/typ4/INV
+  M1_Baseline: DeferContainment/typ4/INV
+  M1_Baseline: Exfiltrate/typ6/INV
+  M1_Baseline: Exfiltrate/vp06/INV
+  M1_Baseline: LateralInfect/typ5/INV
+  M1_Baseline: LateralInfect/typ6/INV
+  M1_Hardened: AnalyseSuspicious/typ5/INV
+  M1_Hardened: AnalyseSuspicious/typ6/INV
+  M1_Hardened: ReObserve/typ4/INV
+  M1_Hardened: DeferContainment/typ4/INV
+  M1_Hardened: LateralInfect/typ5/INV
+  M1_Hardened: LateralInfect/typ6/INV
+exit 0

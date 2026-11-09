@@ -91,7 +91,7 @@ export function ResearchOverview() {
                 The finding this platform demonstrates
               </p>
               <p className="mt-2.5 text-[14px] leading-relaxed text-ink-200">
-                Four of six properties hold. Two do not. In every simulated run
+                Six of eight properties hold in the baseline model. Two do not. In every simulated run
                 the response still succeeds — threats are caught and devices
                 quarantined — but model checking shows containment is{' '}
                 <strong className="font-semibold text-ink-100">reachable</strong>{' '}

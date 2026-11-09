@@ -60,7 +60,7 @@ guard rather than of self-compromise.
 | **VP-02** Safe State Reachability | `AG EF (∀d . place(d) ∈ {Idle, Normal, Isolation, Recovery})` | Verified | — | Verified | — |
 | **VP-03** Deadlock Freedom | `AG (EX true)` | Verified | — | Verified | — |
 | **VP-04** Isolation Successful | `AG ¬(trust(d) = quarantined ∧ canTransmit(d))` | Verified | — | Verified | — |
-| **VP-05** Malware Containment | `AG (∃d . place(d) = MalwareExecution → AF (place(d) = Isolation))` | Failed | Failed | Failed | Verified |
+| **VP-05** Malware Containment | `AG ((∃d . place(d) = MalwareExecution) → AF (∃d . place(d) = Isolation))` | Failed | Failed | Failed | Verified |
 | **VP-06** Data Leakage Prevention | `G ¬(∃d . place(d) = Exfiltration ∧ ¬detected(d))` | Failed | — | Verified | — |
 | **VP-07** Critical Asset Safety | `AG ¬(cls(d) = plc ∧ threat(d) = confirmed)` | Verified | — | Verified | — |
 | **VP-08** Lateral Movement Bound | `AG (|{d : threat(d) = confirmed}| ≤ 2)` | Verified | — | Verified | — |
@@ -126,9 +126,9 @@ Once a device is quarantined, no transmitting transition is enabled for it — n
 
 ### VP-05 — Malware Containment
 
-**Property.** `AG (∃d . place(d) = MalwareExecution → AF (place(d) = Isolation))` (CTL, Safety)
+**Property.** `AG ((∃d . place(d) = MalwareExecution) → AF (∃d . place(d) = Isolation))` (CTL, Liveness)
 
-Every device that reaches Malware Execution must inevitably reach Isolation. Reachability is not enough — the eventuality has to hold on every path.
+Whenever a device is in Malware Execution, a device must inevitably reach Isolation. Reachability is not enough — the eventuality has to hold on every path. (The stricter per-device reading, checked in tools/crosscheck_model.py, gives the same verdicts.)
 
 **Baseline result.** Failed · under weak fairness: Failed · 5,600 violating states of 15,876
 
@@ -206,11 +206,11 @@ No execution contains a state in which data leaves a device before the detector 
 
 **Security weakness.** Detection requires two suspicious observations, but the exfiltration arc is enabled after the first. A transfer therefore completes while the detector is still gathering evidence — the leak precedes the verdict.
 
-**Modification.** Two complementary controls. The detector gained an abnormal-volume disjunct `[vol >= VOLUME_THRESHOLD]` so a single anomalous transfer suffices. The exfiltration arc gained an egress hold `[detFired OR obs = 0]`: a device carrying an open suspicion indicator cannot transfer until the detector has ruled. The transition is retained, not deleted — it stays reachable once detection has fired, and legitimate transfers (obs = 0) are untouched.
+**Modification.** Two complementary controls. The detector gained an abnormal-volume disjunct `[vol >= VOLUME_THRESHOLD]` so a single anomalous transfer suffices. The exfiltration arc gained an egress hold `[detFired OR obs = 0]`: a device carrying an open suspicion indicator cannot transfer until the detector has ruled. The transition is not deleted, but in this model it can no longer fire: every device that reaches Malware Execution carries obs ≥ 1, and detection moves the token out of Malware Execution, so neither disjunct of the hold can be true there. `t-exfil` and `t-resume` are therefore dead in the hardened net. Legitimate (non-malicious) transfers are not modelled.
 
 **Hardened result.** Verified
 
-**Interpretation.** Egress is held pending inspection rather than blocked outright, which is how an inline DLP broker behaves in practice. The property now holds on every path, and it holds without weakening the formula.
+**Interpretation.** The property holds on every path without weakening the formula, but it holds because exfiltration from a compromised device has become impossible in the model, not because transfers are inspected and then released. A model that distinguishes legitimate traffic would be needed to show that the hold does not also block normal operation.
 
 ---
 

@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<org.eventb.core.machineFile org.eventb.core.configuration="org.eventb.core.fwd" org.eventb.core.comment="Exact three-device instance of M1_Baseline, for ProB model checking. Adds nothing." version="5">
+<org.eventb.core.refinesMachine name="_1" org.eventb.core.target="M1_Baseline"/>
+<org.eventb.core.seesContext name="_2" org.eventb.core.target="C2_Instance"/>
+<org.eventb.core.variable name="_3" org.eventb.core.identifier="place"/>
+<org.eventb.core.variable name="_4" org.eventb.core.identifier="trust"/>
+<org.eventb.core.variable name="_5" org.eventb.core.identifier="threat"/>
+<org.eventb.core.variable name="_6" org.eventb.core.identifier="att"/>
+<org.eventb.core.variable name="_7" org.eventb.core.identifier="obs"/>
+<org.eventb.core.variable name="_8" org.eventb.core.identifier="vol"/>
+<org.eventb.core.variable name="_9" org.eventb.core.identifier="detected"/>
+<org.eventb.core.event name="_10" org.eventb.core.convergence="0" org.eventb.core.extended="true" org.eventb.core.label="INITIALISATION">
+</org.eventb.core.event>
+<org.eventb.core.event name="_11" org.eventb.core.convergence="0" org.eventb.core.extended="true" org.eventb.core.label="Receive">
+  <org.eventb.core.refinesEvent name="_1" org.eventb.core.target="Receive"/>
+</org.eventb.core.event>
+<org.eventb.core.event name="_12" org.eventb.core.convergence="0" org.eventb.core.extended="true" org.eventb.core.label="Authenticate">
+  <org.eventb.core.refinesEvent name="_1" org.eventb.core.target="Authenticate"/>
+</org.eventb.core.event>
+<org.eventb.core.event name="_13" org.eventb.core.convergence="0" org.eventb.core.extended="true" org.eventb.core.label="AnalyseNormal">
+  <org.eventb.core.refinesEvent name="_1" org.eventb.core.target="AnalyseNormal"/>
+</org.eventb.core.event>
+<org.eventb.core.event name="_14" org.eventb.core.convergence="0" org.eventb.core.extended="true" org.eventb.core.label="AnalyseSuspicious">
+  <org.eventb.core.refinesEvent name="_1" org.eventb.core.target="AnalyseSuspicious"/>
+</org.eventb.core.event>
+<org.eventb.core.event name="_15" org.eventb.core.convergence="0" org.eventb.core.extended="true" org.eventb.core.label="ReObserve">
+  <org.eventb.core.refinesEvent name="_1" org.eventb.core.target="ReObserve"/>
+</org.eventb.core.event>
+<org.eventb.core.event name="_16" org.eventb.core.convergence="0" org.eventb.core.extended="true" org.eventb.core.label="ExecutePayload">
+  <org.eventb.core.refinesEvent name="_1" org.eventb.core.target="ExecutePayload"/>
+</org.eventb.core.event>
+<org.eventb.core.event name="_17" org.eventb.core.convergence="0" org.eventb.core.extended="true" org.eventb.core.label="DeferContainment">
+  <org.eventb.core.refinesEvent name="_1" org.eventb.core.target="DeferContainment"/>
+</org.eventb.core.event>
+<org.eventb.core.event name="_18" org.eventb.core.convergence="0" org.eventb.core.extended="true" org.eventb.core.label="Exfiltrate">
+  <org.eventb.core.refinesEvent name="_1" org.eventb.core.target="Exfiltrate"/>
+</org.eventb.core.event>
+<org.eventb.core.event name="_19" org.eventb.core.convergence="0" org.eventb.core.extended="true" org.eventb.core.label="ResumeExecution">
+  <org.eventb.core.refinesEvent name="_1" org.eventb.core.target="ResumeExecution"/>
+</org.eventb.core.event>
+<org.eventb.core.event name="_20" org.eventb.core.convergence="0" org.eventb.core.extended="true" org.eventb.core.label="DetectMalware">
+  <org.eventb.core.refinesEvent name="_1" org.eventb.core.target="DetectMalware"/>
+</org.eventb.core.event>
+<org.eventb.core.event name="_21" org.eventb.core.convergence="0" org.eventb.core.extended="true" org.eventb.core.label="VerifyProperties">
+  <org.eventb.core.refinesEvent name="_1" org.eventb.core.target="VerifyProperties"/>
+</org.eventb.core.event>
+<org.eventb.core.event name="_22" org.eventb.core.convergence="0" org.eventb.core.extended="true" org.eventb.core.label="IsolateDevice">
+  <org.eventb.core.refinesEvent name="_1" org.eventb.core.target="IsolateDevice"/>
+</org.eventb.core.event>
+<org.eventb.core.event name="_23" org.eventb.core.convergence="0" org.eventb.core.extended="true" org.eventb.core.label="RecoverDevice">
+  <org.eventb.core.refinesEvent name="_1" org.eventb.core.target="RecoverDevice"/>
+</org.eventb.core.event>
+<org.eventb.core.event name="_24" org.eventb.core.convergence="0" org.eventb.core.extended="true" org.eventb.core.label="RestoreNormal">
+  <org.eventb.core.refinesEvent name="_1" org.eventb.core.target="RestoreNormal"/>
+</org.eventb.core.event>
+<org.eventb.core.event name="_25" org.eventb.core.convergence="0" org.eventb.core.extended="true" org.eventb.core.label="RestoreRecovered">
+  <org.eventb.core.refinesEvent name="_1" org.eventb.core.target="RestoreRecovered"/>
+</org.eventb.core.event>
+<org.eventb.core.event name="_26" org.eventb.core.convergence="0" org.eventb.core.extended="true" org.eventb.core.label="LateralInfect">
+  <org.eventb.core.refinesEvent name="_1" org.eventb.core.target="LateralInfect"/>
+</org.eventb.core.event>
+</org.eventb.core.machineFile>

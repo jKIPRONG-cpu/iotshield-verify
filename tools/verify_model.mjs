@@ -225,9 +225,9 @@ const NARRATIVE = {
     weakness:
       'Detection requires two suspicious observations, but the exfiltration arc is enabled after the first. A transfer therefore completes while the detector is still gathering evidence — the leak precedes the verdict.',
     modification:
-      'Two complementary controls. The detector gained an abnormal-volume disjunct `[vol >= VOLUME_THRESHOLD]` so a single anomalous transfer suffices. The exfiltration arc gained an egress hold `[detFired OR obs = 0]`: a device carrying an open suspicion indicator cannot transfer until the detector has ruled. The transition is retained, not deleted — it stays reachable once detection has fired, and legitimate transfers (obs = 0) are untouched.',
+      'Two complementary controls. The detector gained an abnormal-volume disjunct `[vol >= VOLUME_THRESHOLD]` so a single anomalous transfer suffices. The exfiltration arc gained an egress hold `[detFired OR obs = 0]`: a device carrying an open suspicion indicator cannot transfer until the detector has ruled. The transition is not deleted, but in this model it can no longer fire: every device that reaches Malware Execution carries obs ≥ 1, and detection moves the token out of Malware Execution, so neither disjunct of the hold can be true there. `t-exfil` and `t-resume` are therefore dead in the hardened net. Legitimate (non-malicious) transfers are not modelled.',
     interpretation:
-      'Egress is held pending inspection rather than blocked outright, which is how an inline DLP broker behaves in practice. The property now holds on every path, and it holds without weakening the formula.',
+      'The property holds on every path without weakening the formula, but it holds because exfiltration from a compromised device has become impossible in the model, not because transfers are inspected and then released. A model that distinguishes legitimate traffic would be needed to show that the hold does not also block normal operation.',
   },
   'VP-07': {
     weakness: null,

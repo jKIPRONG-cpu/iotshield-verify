@@ -1,0 +1,23 @@
+$ python3 verification-logs/2026-11-08/scale4.py tools   (GW-1, TH-1, PLC-1 + SN-1 sensor/building/hard 1/internal)
+run: 2026-11-08, Python 3.10.12, WSL2
+baseline states 1000188 transitions 6177276 terminal 0 explore 47s
+  VP-01 Verified 0 
+  VP-02 Verified 0 
+  VP-03 Verified 0 
+  VP-04 Verified 0 
+  VP-05 Failed 422744 fair: Failed 60512
+  VP-06 Failed 297724 
+  VP-07 Verified 0 
+  VP-08 Failed 665500 
+hardened states 186624 transitions 986688 terminal 0 explore 7s
+  VP-01 Verified 0 
+  VP-02 Verified 0 
+  VP-03 Verified 0 
+  VP-04 Verified 0 
+  VP-05 Failed 68572 fair: Verified 0
+  VP-06 Verified 0 
+  VP-07 Verified 0 
+  VP-08 Failed 87808 
+	Maximum resident set size (kbytes): 1297292
+
+[exited with code 0]

@@ -306,7 +306,7 @@ export function NetworkVisual() {
       <FloatingChip
         className="right-0 top-1/3"
         tone="brand"
-        label="6 properties model-checked"
+        label="8 properties model-checked"
       />
       <FloatingChip
         className="bottom-8 left-4"
