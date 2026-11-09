@@ -6,10 +6,10 @@ same coloured Petri net as `frontend/src/components/petri/formal/` in Event-B.
 machine, for reading, for the thesis appendix, or for entering the model by hand
 if the import fails.
 
-**Status: the model has not yet been run in Rodin.** It was written and checked
-outside Rodin (see "How the model was checked before Rodin" below). The proof
-statistics and ProB results must come from running it, and only those figures
-should be reported.
+**Status: run in Rodin 3.9 on 9 November 2026.** 564 of 578 proof obligations
+were discharged automatically. The 14 open ones are the expected baseline
+VP-06 failure and 13 counter-bound typing invariants; see "Results from Rodin"
+below. ProB has not been run.
 
 ## What is in the project
 
@@ -101,15 +101,37 @@ ProB adds a root state and constant set-up steps, so its raw totals will be
 slightly higher. If the counts differ by more than that, something is wrong;
 report it rather than adjusting the model.
 
-### Results to fill in (from Rodin; do not estimate)
+### Results from Rodin (9 November 2026)
+
+Rodin 3.9.0 on Windows, Java 17 (Temurin 17.0.21). Provers: Atelier B 2.4.1
+(ML, P0, P1, PP) and SMT Solvers 1.5.0 (CVC3, CVC4, veriT, Z3), with the
+auto-tactic profile *Default Auto Tactic with SMT*. The model type-checks with
+no errors. Evidence: `verification-logs/2026-11-09/`.
+
+**564 of 578 proof obligations discharged automatically, 0 manually, 14 open.**
 
 | Machine | Total POs | Auto | Manual | Undischarged |
 |---|---|---|---|---|
-| M0_Abstract | | | | |
-| M1_Baseline | | | | (expect ≥ 1: `Exfiltrate/vp06/INV`) |
-| M1_Hardened | | | | |
-| M2_BaselineInstance | | | | |
-| M2_HardenedInstance | | | | |
+| M0_Abstract | 16 | 16 | 0 | 0 |
+| M1_Baseline | 279 | 271 | 0 | 8: `Exfiltrate/vp06/INV` and 7 counter bounds |
+| M1_Hardened | 282 | 276 | 0 | 6 counter bounds |
+| M2_BaselineInstance | 0 | — | — | — |
+| M2_HardenedInstance | 0 | — | — | — |
+
+(Contexts: C1_Lifecycle 1/1; C0 and C2 have none.)
+
+- `M1_Baseline` `Exfiltrate/vp06/INV` is open, as expected: VP-06 fails in the
+  baseline. In `M1_Hardened`, all 16 VP-06 obligations are discharged.
+- The other 13 open obligations are typing invariants `typ4`–`typ6`
+  (`att`, `obs`, `vol` stay within their bounds) on events whose action is
+  `x(d) ≔ min({x(d) + 1, BOUND})`. They are true but were not closed by the
+  automatic provers, and no interactive proof was attempted. Each invariant
+  proof may assume the other invariants, so the proof of VP-06 for the hardened
+  machine is complete only once these 13 are closed as well.
+- All well-definedness (97/97), guard-strengthening (12/12) and theorem (8/8)
+  obligations, and all gluing invariants, are discharged.
+
+Refresh with `python3 eventb/tools/rodin_status.py <workspace>/IoTShieldEventB --open`.
 
 ## How the model was checked before Rodin
 

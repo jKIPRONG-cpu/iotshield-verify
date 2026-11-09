@@ -1,0 +1,14 @@
+# Prover steps in the saved proof trees (.bpr), counted per prover. A proof can contain several steps, so these are not obligation counts.
+== M0_Abstract
+     10 prDisplay="ML"
+      1 prDisplay="PP"
+== M1_Baseline
+    298 prDisplay="CVC3"
+     32 prDisplay="CVC4"
+     29 prDisplay="ML"
+      2 prDisplay="Z3"
+== M1_Hardened
+    300 prDisplay="CVC3"
+     29 prDisplay="ML"
+     22 prDisplay="Z3"
+     14 prDisplay="CVC4"
