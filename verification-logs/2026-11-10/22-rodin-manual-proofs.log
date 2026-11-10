@@ -1,0 +1,25 @@
+# Obligations proved interactively (psManual=true, confidence 1000), and the prover steps in their saved proof trees.
+== M1_Baseline
+  AnalyseSuspicious/typ5/INV  confidence=1000
+  AnalyseSuspicious/typ6/INV  confidence=1000
+  ReObserve/typ4/INV  confidence=1000
+  DeferContainment/typ4/INV  confidence=1000
+  Exfiltrate/typ6/INV  confidence=1000
+  Exfiltrate/vp06/INV  confidence=0
+  LateralInfect/typ5/INV  confidence=1000
+  LateralInfect/typ6/INV  confidence=1000
+== M1_Hardened
+  AnalyseSuspicious/typ5/INV  confidence=1000
+  AnalyseSuspicious/typ6/INV  confidence=1000
+  ReObserve/typ4/INV  confidence=1000
+  DeferContainment/typ4/INV  confidence=1000
+  LateralInfect/typ5/INV  confidence=1000
+  LateralInfect/typ6/INV  confidence=1000
+
+# Exfiltrate/vp06/INV carries a saved, unfinished interactive attempt (confidence 0): it was tried and is
+# not discharged. It is the expected open obligation (VP-06 is false in the baseline).
+#
+# Proof steps used in every one of the 13 proofs (read from the .bpr proof trees): hypothesis selection
+# (lasso, org.eventb.core.seqprover.mngHyp), Rodin's automatic rewrites and equality substitution, then the
+# Atelier B ML prover (com.clearsy.atelierb.provers.core.externalML). Example, M1_Hardened ReObserve/typ4/INV:
+# goal  att <+ {d |-> att(d)+1} : DEV --> INT,  closed by ML after selecting  att : DEV --> INT  and  d : DEV.

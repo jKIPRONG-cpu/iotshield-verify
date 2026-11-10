@@ -130,9 +130,16 @@ def concrete(name, hardened):
         ("typ1","place ∈ DEV → PLACE",False),
         ("typ2","trust ∈ DEV → TRUST",False),
         ("typ3","threat ∈ DEV → THREAT",False),
-        ("typ4","att ∈ DEV → 0‥MAXATT",False),
-        ("typ5","obs ∈ DEV → 0‥STH",False),
-        ("typ6","vol ∈ DEV → 0‥VMAX",False),
+        # Counters are typed as integer-valued functions and bounded in the ∀x form
+        # used by the other invariants. The form "att ∈ DEV → 0‥MAXATT" is
+        # equivalent, but under function override Rodin's automatic provers left
+        # 13 of its obligations open (run of 9 Nov 2026).
+        ("typ4","att ∈ DEV → ℤ",False),
+        ("typ5","obs ∈ DEV → ℤ",False),
+        ("typ6","vol ∈ DEV → ℤ",False),
+        ("bnd4","∀x·x ∈ DEV ⇒ 0 ≤ att(x) ∧ att(x) ≤ MAXATT",False),
+        ("bnd5","∀x·x ∈ DEV ⇒ 0 ≤ obs(x) ∧ obs(x) ≤ STH",False),
+        ("bnd6","∀x·x ∈ DEV ⇒ 0 ≤ vol(x) ∧ vol(x) ≤ VMAX",False),
         ("typ7","detected ⊆ DEV",False),
         ("glue1","∀x·x ∈ DEV ⇒ (status(x) = ok ⇔ place(x) ∈ OKP)",False),
         ("glue2","∀x·x ∈ DEV ⇒ (status(x) = compromised ⇔ place(x) ∈ CP)",False),

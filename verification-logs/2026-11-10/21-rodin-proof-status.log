@@ -1,0 +1,16 @@
+$ python3 eventb/tools/rodin_status.py verification-logs/2026-11-10/rodin --open
+# source: C:\rodin\workspace\IoTShieldEventB\*.bps after the run of 2026-11-10 (rebuild after Project > Clean, then 13 interactive proofs), copied 20:13
+Component                POs  Auto Manual  Open   by kind (discharged/total)
+C0_Abstract                0     0      0     0   
+C1_Lifecycle               1     1      0     0   WD:1/1
+C2_Instance                0     0      0     0   
+M0_Abstract               16    16      0     0   INV:10/10 WD:6/6
+M1_Baseline              299   291      7     1   GRD:6/6 INV:238/239 THM:4/4 WD:50/50
+M1_Hardened              302   296      6     0   GRD:6/6 INV:239/239 THM:4/4 WD:53/53
+M2_BaselineInstance        0     0      0     0   
+M2_HardenedInstance        0     0      0     0   
+TOTAL                    618   604     13     1
+
+Obligations not discharged (1):
+  M1_Baseline: Exfiltrate/vp06/INV
+exit 0
