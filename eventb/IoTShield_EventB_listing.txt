@@ -113,9 +113,12 @@ INVARIANTS
   @typ1 place ∈ DEV → PLACE
   @typ2 trust ∈ DEV → TRUST
   @typ3 threat ∈ DEV → THREAT
-  @typ4 att ∈ DEV → 0‥MAXATT
-  @typ5 obs ∈ DEV → 0‥STH
-  @typ6 vol ∈ DEV → 0‥VMAX
+  @typ4 att ∈ DEV → ℤ
+  @typ5 obs ∈ DEV → ℤ
+  @typ6 vol ∈ DEV → ℤ
+  @bnd4 ∀x·x ∈ DEV ⇒ 0 ≤ att(x) ∧ att(x) ≤ MAXATT
+  @bnd5 ∀x·x ∈ DEV ⇒ 0 ≤ obs(x) ∧ obs(x) ≤ STH
+  @bnd6 ∀x·x ∈ DEV ⇒ 0 ≤ vol(x) ∧ vol(x) ≤ VMAX
   @typ7 detected ⊆ DEV
   @glue1 ∀x·x ∈ DEV ⇒ (status(x) = ok ⇔ place(x) ∈ OKP)
   @glue2 ∀x·x ∈ DEV ⇒ (status(x) = compromised ⇔ place(x) ∈ CP)
@@ -318,9 +321,12 @@ INVARIANTS
   @typ1 place ∈ DEV → PLACE
   @typ2 trust ∈ DEV → TRUST
   @typ3 threat ∈ DEV → THREAT
-  @typ4 att ∈ DEV → 0‥MAXATT
-  @typ5 obs ∈ DEV → 0‥STH
-  @typ6 vol ∈ DEV → 0‥VMAX
+  @typ4 att ∈ DEV → ℤ
+  @typ5 obs ∈ DEV → ℤ
+  @typ6 vol ∈ DEV → ℤ
+  @bnd4 ∀x·x ∈ DEV ⇒ 0 ≤ att(x) ∧ att(x) ≤ MAXATT
+  @bnd5 ∀x·x ∈ DEV ⇒ 0 ≤ obs(x) ∧ obs(x) ≤ STH
+  @bnd6 ∀x·x ∈ DEV ⇒ 0 ≤ vol(x) ∧ vol(x) ≤ VMAX
   @typ7 detected ⊆ DEV
   @glue1 ∀x·x ∈ DEV ⇒ (status(x) = ok ⇔ place(x) ∈ OKP)
   @glue2 ∀x·x ∈ DEV ⇒ (status(x) = compromised ⇔ place(x) ∈ CP)
